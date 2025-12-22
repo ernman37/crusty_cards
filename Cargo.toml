@@ -1,8 +1,9 @@
 [package]
-name = "rusty_cards"
-version = "0.1.0"
+name = "crusty_cards"
+version = "0.0.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "Playing Card and Deck Library"
+license = "BEERWARE"
 
 [dependencies]
+rand = "0.9.2"
