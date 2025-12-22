@@ -1,13 +1,13 @@
-use std::collections::VecDeque;
-use rand::seq::SliceRandom;
 use rand::rng;
-
+use rand::seq::SliceRandom;
+use serde::{Deserialize, Serialize};
+use std::collections::VecDeque;
 
 use crate::Card;
 use crate::DeckFactory;
 
 /// A struct representing a deck of playing cards.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Deck {
     cards: VecDeque<Card>,
 }
@@ -180,7 +180,10 @@ mod tests {
                 return;
             }
         }
-        assert!(false, "Deck shuffle did not change order after multiple attempts");
+        assert!(
+            false,
+            "Deck shuffle did not change order after multiple attempts"
+        );
     }
 
     #[test]
@@ -219,9 +222,7 @@ mod tests {
 
     #[test]
     fn test_deck_add_card() {
-        let cards = VecDeque::from(vec![
-            Card::new(Suit::Hearts, Rank::Ace),
-        ]);
+        let cards = VecDeque::from(vec![Card::new(Suit::Hearts, Rank::Ace)]);
         let mut deck = Deck::new(cards);
         deck.add_card(Card::new(Suit::Spades, Rank::King));
         assert_eq!(deck.len(), 2);
@@ -230,13 +231,14 @@ mod tests {
 
     #[test]
     fn test_deck_add_card_bottom() {
-        let cards = VecDeque::from(vec![
-            Card::new(Suit::Hearts, Rank::Ace),
-        ]);
+        let cards = VecDeque::from(vec![Card::new(Suit::Hearts, Rank::Ace)]);
         let mut deck = Deck::new(cards);
         deck.add_card_bottom(Card::new(Suit::Spades, Rank::King));
         assert_eq!(deck.len(), 2);
-        assert_eq!(deck.peek_bottom(), Some(&Card::new(Suit::Spades, Rank::King)));
+        assert_eq!(
+            deck.peek_bottom(),
+            Some(&Card::new(Suit::Spades, Rank::King))
+        );
     }
 
     #[test]
@@ -280,4 +282,16 @@ mod tests {
         assert_eq!(deck.len(), 0);
     }
 
+    #[test]
+    fn test_deck_serialization() {
+        let cards = VecDeque::from(vec![
+            Card::new(Suit::Hearts, Rank::Ace),
+            Card::new(Suit::Spades, Rank::King),
+        ]);
+        let deck = Deck::new(cards);
+        let serialized = serde_json::to_string(&deck).unwrap();
+        let deserialized: Deck = serde_json::from_str(&serialized).unwrap();
+        assert_eq!(deck.len(), deserialized.len());
+        assert_eq!(deck.display(), deserialized.display());
+    }
 }

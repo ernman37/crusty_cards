@@ -1,33 +1,32 @@
+use serde::{Deserialize, Serialize};
 
 /// Represents the color of a card. Useful for games that utilize card colors (e.g., Euchre)
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-pub enum Color{
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
+pub enum Color {
     Red,
     Black,
 }
 /// Represents the suit of a card.
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-pub enum Suit{
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
+pub enum Suit {
     Hearts,
     Diamonds,
     Clubs,
     Spades,
 }
 
-impl Suit{
-    pub fn color(&self) -> &Color{
-        match self{
-            Suit::Hearts => &Color::Red,
-            Suit::Diamonds => &Color::Red,
-            Suit::Clubs => &Color::Black,
-            Suit::Spades => &Color::Black,
+impl Suit {
+    pub const fn color(&self) -> Color {
+        match self {
+            Suit::Hearts | Suit::Diamonds => Color::Red,
+            Suit::Clubs | Suit::Spades => Color::Black,
         }
     }
 }
 
 /// Represents the rank of a card. Useful for games that utilize card ranks (e.g., Poker)
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-pub enum Rank{
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
+pub enum Rank {
     Two,
     Three,
     Four,
@@ -45,20 +44,20 @@ pub enum Rank{
 }
 
 /// Represents a playing card with a suit and rank.
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-pub struct Card{
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
+pub struct Card {
     suit: Suit,
     rank: Rank,
 }
 
-impl Card{
+impl Card {
     /// Creates a new card with the given suit and rank.
-    pub fn new(suit: Suit, rank: Rank) -> Self{
+    pub fn new(suit: Suit, rank: Rank) -> Self {
         Card { suit, rank }
     }
 
     /// Displays the card in a human-readable format.
-    pub fn display(&self) -> String{
+    pub fn display(&self) -> String {
         let rank_str = self.get_value_str();
         let suit_str = self.get_suit_str();
 
@@ -66,14 +65,18 @@ impl Card{
     }
 
     /// Displays the card using ascii art.
-    pub fn display_ascii(&self) -> String{
+    pub fn display_ascii(&self) -> String {
         let rank_str = self.get_value_str();
         let suit_str = self.get_suit_str();
-        format!("┌─────┐\n│{}   │\n│  {}  │\n│   {}│\n└─────┘", rank_str, suit_str, rank_str)
+        format!(
+            "┌─────┐\n│{}   │\n│  {}  │\n│   {}│\n└─────┘",
+            rank_str, suit_str, rank_str
+        )
     }
 
-    pub fn get_value_str(&self) -> &str{
-        match self.rank{
+    /// Returns the string representation of the card's rank.
+    pub fn get_value_str(&self) -> &str {
+        match self.rank {
             Rank::Two => "2",
             Rank::Three => "3",
             Rank::Four => "4",
@@ -91,8 +94,8 @@ impl Card{
         }
     }
 
-    pub fn get_value_int(&self) -> u8{
-        match self.rank{
+    pub fn get_value_int(&self) -> u8 {
+        match self.rank {
             Rank::Two => 2,
             Rank::Three => 3,
             Rank::Four => 4,
@@ -110,8 +113,8 @@ impl Card{
         }
     }
 
-    pub fn get_suit_str(&self) -> &str{
-        match self.suit{
+    pub fn get_suit_str(&self) -> &str {
+        match self.suit {
             Suit::Hearts => "♥",
             Suit::Diamonds => "♦",
             Suit::Clubs => "♣",
@@ -120,99 +123,110 @@ impl Card{
     }
 
     /// Returns the color of the card.
-    pub fn color(&self) -> &Color{
+    pub fn color(&self) -> Color {
         self.suit.color()
     }
 
     /// Returns the suit of the card.
-    pub fn suit(&self) -> &Suit{
+    pub fn suit(&self) -> &Suit {
         &self.suit
     }
 
     /// Returns the rank of the card.
-    pub fn rank(&self) -> &Rank{
+    pub fn rank(&self) -> &Rank {
         &self.rank
     }
 
     /// Checks if the card is an Ace.
-    pub fn is_ace(&self) -> bool{
+    pub fn is_ace(&self) -> bool {
         matches!(self.rank, Rank::Ace)
     }
 
     /// Checks if the card is a face card (Jack, Queen, King).
-    pub fn is_face_card(&self) -> bool{
+    pub fn is_face_card(&self) -> bool {
         matches!(self.rank, Rank::Jack | Rank::Queen | Rank::King)
     }
 
     /// Checks if the card is a value card (2-10).
-    pub fn is_value_card(&self) -> bool{
-        matches!(self.rank, Rank::Two | Rank::Three | Rank::Four | Rank::Five | Rank::Six | Rank::Seven | Rank::Eight | Rank::Nine | Rank::Ten)
+    pub fn is_value_card(&self) -> bool {
+        matches!(
+            self.rank,
+            Rank::Two
+                | Rank::Three
+                | Rank::Four
+                | Rank::Five
+                | Rank::Six
+                | Rank::Seven
+                | Rank::Eight
+                | Rank::Nine
+                | Rank::Ten
+        )
     }
 
     /// Checks if the card is a Joker.
-    pub fn is_joker(&self) -> bool{
+    pub fn is_joker(&self) -> bool {
         matches!(self.rank, Rank::Joker)
     }
 
     /// Compares the rank of this card with another card.
-    pub fn is_same_rank(&self, other: &Card) -> bool{
+    pub fn is_same_rank(&self, other: &Card) -> bool {
         self.rank == other.rank
     }
 
     /// Compares the suit of this card with another card.
-    pub fn is_same_suit(&self, other: &Card) -> bool{
+    pub fn is_same_suit(&self, other: &Card) -> bool {
         self.suit == other.suit
     }
 
     /// Compares the color of this card with another card.
-    pub fn is_same_color(&self, other: &Card) -> bool{
+    pub fn is_same_color(&self, other: &Card) -> bool {
         self.color() == other.color()
     }
 }
 
 #[cfg(test)]
-mod tests{
-    use super::{Card, Rank, Suit, Color};
+mod tests {
+    use super::{Card, Color, Rank, Suit};
 
     #[test]
-    fn test_suit_color(){
+    fn test_suit_color() {
         let suit = Suit::Hearts;
-        assert_eq!(suit.color(), &Color::Red);
+        assert_eq!(suit.color(), Color::Red);
         let suit = Suit::Diamonds;
-        assert_eq!(suit.color(), &Color::Red);
+        assert_eq!(suit.color(), Color::Red);
         let suit = Suit::Clubs;
-        assert_eq!(suit.color(), &Color::Black);
+        assert_eq!(suit.color(), Color::Black);
         let suit = Suit::Spades;
-        assert_eq!(suit.color(), &Color::Black);
+        assert_eq!(suit.color(), Color::Black);
     }
 
     #[test]
-    fn test_card_display(){
+    fn test_card_display() {
         let card = Card::new(Suit::Hearts, Rank::Ace);
         assert_eq!(card.display(), "A♥");
     }
 
     #[test]
-    fn test_card_color(){
+    fn test_card_color() {
         let heart_card = Card::new(Suit::Hearts, Rank::Ace);
-        assert_eq!(heart_card.color(), &Color::Red);
-        assert_ne!(heart_card.color(), &Color::Black);
+        assert_eq!(heart_card.color(), Color::Red);
+        assert_ne!(heart_card.color(), Color::Black);
 
         let diamond_card = Card::new(Suit::Diamonds, Rank::Ace);
-        assert_eq!(diamond_card.color(), &Color::Red);
-        assert_ne!(diamond_card.color(), &Color::Black);
+        assert_eq!(diamond_card.color(), Color::Red);
+        assert_ne!(diamond_card.color(), Color::Black);
 
         let clubs_card = Card::new(Suit::Clubs, Rank::King);
-        assert_eq!(clubs_card.color(), &Color::Black);
-        assert_ne!(clubs_card.color(), &Color::Red);
+        assert_eq!(clubs_card.color(), Color::Black);
+        assert_ne!(clubs_card.color(), Color::Red);
 
         let spade_card = Card::new(Suit::Spades, Rank::Queen);
-        assert_eq!(spade_card.color(), &Color::Black);
-        assert_ne!(spade_card.color(), &Color::Red);
+        assert_eq!(spade_card.color(), Color::Black);
+        assert_ne!(spade_card.color(), Color::Red);
     }
 
     #[test]
-    fn test_card_is_ace(){
+    fn test_card_is_ace() {
         let ace_card = Card::new(Suit::Hearts, Rank::Ace);
         assert!(ace_card.is_ace());
         assert!(!ace_card.is_face_card());
@@ -224,7 +238,7 @@ mod tests{
     }
 
     #[test]
-    fn test_card_is_face_card(){
+    fn test_card_is_face_card() {
         let face_card = Card::new(Suit::Spades, Rank::Queen);
         assert!(!face_card.is_ace());
         assert!(face_card.is_face_card());
@@ -236,7 +250,7 @@ mod tests{
     }
 
     #[test]
-    fn test_card_is_value_card(){
+    fn test_card_is_value_card() {
         let value_card = Card::new(Suit::Clubs, Rank::Seven);
         assert!(!value_card.is_ace());
         assert!(!value_card.is_face_card());
@@ -248,7 +262,7 @@ mod tests{
     }
 
     #[test]
-    fn test_card_is_joker(){
+    fn test_card_is_joker() {
         let joker_card = Card::new(Suit::Hearts, Rank::Joker);
         assert!(!joker_card.is_ace());
         assert!(!joker_card.is_face_card());
@@ -260,7 +274,7 @@ mod tests{
     }
 
     #[test]
-    fn test_card_get_value_str(){
+    fn test_card_get_value_str() {
         let card = Card::new(Suit::Hearts, Rank::Two);
         assert_eq!(card.get_value_str(), "2");
         let card = Card::new(Suit::Hearts, Rank::Three);
@@ -292,7 +306,7 @@ mod tests{
     }
 
     #[test]
-    fn test_card_get_value_int(){
+    fn test_card_get_value_int() {
         let card = Card::new(Suit::Hearts, Rank::Two);
         assert_eq!(card.get_value_int(), 2);
         let card = Card::new(Suit::Hearts, Rank::Three);
@@ -324,7 +338,7 @@ mod tests{
     }
 
     #[test]
-    fn test_card_get_suit_str(){
+    fn test_card_get_suit_str() {
         let card = Card::new(Suit::Hearts, Rank::Ace);
         assert_eq!(card.get_suit_str(), "♥");
         let card = Card::new(Suit::Diamonds, Rank::Ace);
@@ -336,7 +350,7 @@ mod tests{
     }
 
     #[test]
-    fn test_card_is_equal(){
+    fn test_card_is_equal() {
         let card1 = Card::new(Suit::Hearts, Rank::Ace);
         let card2 = Card::new(Suit::Hearts, Rank::Ace);
         let card3 = Card::new(Suit::Spades, Rank::King);
@@ -348,7 +362,7 @@ mod tests{
     }
 
     #[test]
-    fn test_card_is_same_rank(){
+    fn test_card_is_same_rank() {
         let card1 = Card::new(Suit::Hearts, Rank::Ace);
         let card2 = Card::new(Suit::Spades, Rank::Ace);
         let card3 = Card::new(Suit::Diamonds, Rank::King);
@@ -360,7 +374,7 @@ mod tests{
     }
 
     #[test]
-    fn test_card_is_same_suit(){
+    fn test_card_is_same_suit() {
         let card1 = Card::new(Suit::Hearts, Rank::Ace);
         let card2 = Card::new(Suit::Hearts, Rank::King);
         let card3 = Card::new(Suit::Spades, Rank::Ace);
@@ -372,7 +386,7 @@ mod tests{
     }
 
     #[test]
-    fn test_card_is_same_color(){
+    fn test_card_is_same_color() {
         let card1 = Card::new(Suit::Hearts, Rank::Ace);
         let card2 = Card::new(Suit::Diamonds, Rank::King);
         let card3 = Card::new(Suit::Spades, Rank::Ace);
@@ -384,9 +398,17 @@ mod tests{
     }
 
     #[test]
-    fn test_card_display_ascii(){
+    fn test_card_display_ascii() {
         let card = Card::new(Suit::Hearts, Rank::Ace);
         let expected = "┌─────┐\n│A   │\n│  ♥  │\n│   A│\n└─────┘";
         assert_eq!(card.display_ascii(), expected);
+    }
+
+    #[test]
+    fn test_card_serialization() {
+        let card = Card::new(Suit::Hearts, Rank::Ace);
+        let serialized = serde_json::to_string(&card).unwrap();
+        let deserialized: Card = serde_json::from_str(&serialized).unwrap();
+        assert_eq!(card, deserialized);
     }
 }
