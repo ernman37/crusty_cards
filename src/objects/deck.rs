@@ -17,13 +17,14 @@ impl Deck {
     }
 
     /// Cuts the deck at the given index.
-    pub fn cut(&mut self, index: usize) {
+    pub fn cut(&mut self, index: usize) -> bool {
         if index >= self.cards.len() {
-            return;
+            return false;
         }
         let mut top = self.cards.split_off(index);
         top.append(&mut self.cards);
         self.cards = top;
+        true
     }
 
     /// Returns the number of cards in the deck.
@@ -47,6 +48,13 @@ impl Deck {
         let mut cards_vec: Vec<Card> = self.cards.drain(..).collect();
         cards_vec.shuffle(&mut rng);
         self.cards = VecDeque::from(cards_vec);
+    }
+
+    /// Shuffle Times
+    pub fn shuffle_times(&mut self, times: usize) {
+        for _ in 0..times {
+            self.shuffle();
+        }
     }
 
     /// Deals a card from the top of the deck.
@@ -83,4 +91,181 @@ impl Deck {
     pub fn clear(&mut self) {
         self.cards.clear();
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Deck;
+    use crate::{Card, Rank, Suit};
+    use std::collections::VecDeque;
+
+    #[test]
+    fn test_deck_creation() {
+        let cards = VecDeque::from(vec![
+            Card::new(Suit::Hearts, Rank::Ace),
+            Card::new(Suit::Spades, Rank::King),
+        ]);
+        let deck = Deck::new(cards.clone());
+        assert_eq!(deck.len(), 2);
+        assert_eq!(deck.peek(), Some(&cards[0]));
+    }
+
+    #[test]
+    fn test_deck_cut() {
+        let cards = VecDeque::from(vec![
+            Card::new(Suit::Hearts, Rank::Ace),
+            Card::new(Suit::Spades, Rank::King),
+            Card::new(Suit::Diamonds, Rank::Queen),
+            Card::new(Suit::Clubs, Rank::Jack),
+        ]);
+        let mut deck = Deck::new(cards);
+        let result = deck.cut(2);
+        assert_eq!(deck.peek(), Some(&Card::new(Suit::Diamonds, Rank::Queen)));
+        assert!(result);
+
+        let result = deck.cut(10); // Cutting beyond length should do nothing
+        assert!(!result);
+        assert_eq!(deck.peek(), Some(&Card::new(Suit::Diamonds, Rank::Queen)));
+    }
+
+    #[test]
+    fn test_deck_is_empty() {
+        let cards = VecDeque::new();
+        let mut deck = Deck::new(cards);
+        assert!(deck.is_empty());
+        deck.add_card(Card::new(Suit::Hearts, Rank::Ace));
+        assert!(!deck.is_empty());
+    }
+
+    #[test]
+    fn test_deck_display() {
+        let cards = VecDeque::from(vec![
+            Card::new(Suit::Hearts, Rank::Ace),
+            Card::new(Suit::Spades, Rank::King),
+        ]);
+        let deck = Deck::new(cards);
+        let display = deck.display();
+        let card1 = Card::new(Suit::Hearts, Rank::Ace).display();
+        let card2 = Card::new(Suit::Spades, Rank::King).display();
+        assert_eq!(display, vec![card1, card2]);
+    }
+
+    #[test]
+    fn test_deck_shuffle() {
+        let cards = VecDeque::from(vec![
+            Card::new(Suit::Hearts, Rank::Ace),
+            Card::new(Suit::Spades, Rank::King),
+            Card::new(Suit::Diamonds, Rank::Queen),
+            Card::new(Suit::Clubs, Rank::Jack),
+        ]);
+        let mut deck = Deck::new(cards);
+        let original_order: Vec<String> = deck.display();
+        // Try shuffling multiple times to ensure order changes (very low chance of false negative)
+        for _ in 0..100 {
+            deck.shuffle_times(1);
+            let shuffled_order: Vec<String> = deck.display();
+            if original_order != shuffled_order {
+                return;
+            }
+        }
+        assert!(false, "Deck shuffle did not change order after multiple attempts");
+    }
+
+    #[test]
+    fn test_deck_deal() {
+        let cards = VecDeque::from(vec![
+            Card::new(Suit::Hearts, Rank::Ace),
+            Card::new(Suit::Spades, Rank::King),
+        ]);
+        let mut deck = Deck::new(cards);
+        let dealt_card = deck.deal();
+        assert_eq!(dealt_card, Some(Card::new(Suit::Hearts, Rank::Ace)));
+        assert_eq!(deck.len(), 1);
+        let dealt_card2 = deck.deal();
+        assert_eq!(dealt_card2, Some(Card::new(Suit::Spades, Rank::King)));
+        assert_eq!(deck.len(), 0);
+        let dealt_card3 = deck.deal();
+        assert_eq!(dealt_card3, None);
+    }
+
+    #[test]
+    fn test_deck_deal_bottom() {
+        let cards = VecDeque::from(vec![
+            Card::new(Suit::Hearts, Rank::Ace),
+            Card::new(Suit::Spades, Rank::King),
+        ]);
+        let mut deck = Deck::new(cards);
+        let dealt_card = deck.deal_bottom();
+        assert_eq!(dealt_card, Some(Card::new(Suit::Spades, Rank::King)));
+        assert_eq!(deck.len(), 1);
+        let dealt_card2 = deck.deal_bottom();
+        assert_eq!(dealt_card2, Some(Card::new(Suit::Hearts, Rank::Ace)));
+        assert_eq!(deck.len(), 0);
+        let dealt_card3 = deck.deal_bottom();
+        assert_eq!(dealt_card3, None);
+    }
+
+    #[test]
+    fn test_deck_add_card() {
+        let cards = VecDeque::from(vec![
+            Card::new(Suit::Hearts, Rank::Ace),
+        ]);
+        let mut deck = Deck::new(cards);
+        deck.add_card(Card::new(Suit::Spades, Rank::King));
+        assert_eq!(deck.len(), 2);
+        assert_eq!(deck.peek(), Some(&Card::new(Suit::Spades, Rank::King)));
+    }
+
+    #[test]
+    fn test_deck_add_card_bottom() {
+        let cards = VecDeque::from(vec![
+            Card::new(Suit::Hearts, Rank::Ace),
+        ]);
+        let mut deck = Deck::new(cards);
+        deck.add_card_bottom(Card::new(Suit::Spades, Rank::King));
+        assert_eq!(deck.len(), 2);
+        assert_eq!(deck.peek_bottom(), Some(&Card::new(Suit::Spades, Rank::King)));
+    }
+
+    #[test]
+    fn test_deck_peek() {
+        let cards = VecDeque::from(vec![
+            Card::new(Suit::Hearts, Rank::Ace),
+            Card::new(Suit::Spades, Rank::King),
+        ]);
+        let mut deck = Deck::new(cards);
+        let top_card = deck.peek();
+        assert_eq!(top_card, Some(&Card::new(Suit::Hearts, Rank::Ace)));
+        assert_eq!(deck.len(), 2);
+        deck.clear();
+        let empty_peek = deck.peek();
+        assert_eq!(empty_peek, None);
+    }
+
+    #[test]
+    fn test_deck_peek_bottom() {
+        let cards = VecDeque::from(vec![
+            Card::new(Suit::Hearts, Rank::Ace),
+            Card::new(Suit::Spades, Rank::King),
+        ]);
+        let mut deck = Deck::new(cards);
+        let bottom_card = deck.peek_bottom();
+        assert_eq!(bottom_card, Some(&Card::new(Suit::Spades, Rank::King)));
+        assert_eq!(deck.len(), 2);
+        deck.clear();
+        let empty_peek = deck.peek_bottom();
+        assert_eq!(empty_peek, None);
+    }
+
+    #[test]
+    fn test_deck_clear() {
+        let cards = VecDeque::from(vec![
+            Card::new(Suit::Hearts, Rank::Ace),
+            Card::new(Suit::Spades, Rank::King),
+        ]);
+        let mut deck = Deck::new(cards);
+        deck.clear();
+        assert_eq!(deck.len(), 0);
+    }
+
 }
