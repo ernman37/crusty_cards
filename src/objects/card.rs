@@ -1,3 +1,4 @@
+use std::convert::{From, TryFrom};
 use serde::{Deserialize, Serialize};
 
 /// Represents the color of a card. Useful for games that utilize card colors (e.g., Euchre)
@@ -181,6 +182,74 @@ impl Card {
     /// Compares the color of this card with another card.
     pub fn is_same_color(&self, other: &Card) -> bool {
         self.color() == other.color()
+    }
+}
+
+impl TryFrom<usize> for Card {
+    type Error = &'static str;
+
+    fn try_from(value: usize) -> Result<Self, Self::Error> {
+        if value >= 56 {
+            return Err("Value out of range for standard 56-card deck (including 4 jokers, one of each suit)");
+        }
+
+        let suits = [
+            Suit::Hearts,
+            Suit::Diamonds,
+            Suit::Clubs,
+            Suit::Spades
+        ];
+        let ranks = [
+            Rank::Two,
+            Rank::Three,
+            Rank::Four,
+            Rank::Five,
+            Rank::Six,
+            Rank::Seven,
+            Rank::Eight,
+            Rank::Nine,
+            Rank::Ten,
+            Rank::Jack,
+            Rank::Queen,
+            Rank::King,
+            Rank::Ace,
+            Rank::Joker,
+        ];
+
+        let suit = suits[value / 14];
+        let rank = ranks[value % 14];
+
+        Ok(Card::new(suit, rank))
+    }
+}
+
+impl From<Card> for usize {
+    fn from(card: Card) -> Self {
+        let suit_value = match card.suit {
+            Suit::Hearts => 0,
+            Suit::Diamonds => 1,
+            Suit::Clubs => 2,
+            Suit::Spades => 3,
+        };
+
+        let rank_value = match card.rank {
+            Rank::Two => 0,
+            Rank::Three => 1,
+            Rank::Four => 2,
+            Rank::Five => 3,
+            Rank::Six => 4,
+            Rank::Seven => 5,
+            Rank::Eight => 6,
+            Rank::Nine => 7,
+            Rank::Ten => 8,
+            Rank::Jack => 9,
+            Rank::Queen => 10,
+            Rank::King => 11,
+            Rank::Ace => 12,
+            Rank::Joker => 13,
+        };
+
+        suit_value * 14 + rank_value
     }
 }
 
@@ -410,5 +479,60 @@ mod tests {
         let serialized = serde_json::to_string(&card).unwrap();
         let deserialized: Card = serde_json::from_str(&serialized).unwrap();
         assert_eq!(card, deserialized);
+    }
+
+    #[test]
+    fn test_card_try_from_usize() {
+        let card = Card::try_from(0).unwrap();
+        assert_eq!(card, Card::new(Suit::Hearts, Rank::Two));
+        let card = Card::try_from(13).unwrap();
+        assert_eq!(card, Card::new(Suit::Hearts, Rank::Joker));
+        let card = Card::try_from(14).unwrap();
+        assert_eq!(card, Card::new(Suit::Diamonds, Rank::Two));
+        let card = Card::try_from(27).unwrap();
+        assert_eq!(card, Card::new(Suit::Diamonds, Rank::Joker));
+        let card = Card::try_from(28).unwrap();
+        assert_eq!(card, Card::new(Suit::Clubs, Rank::Two));
+        let card = Card::try_from(41).unwrap();
+        assert_eq!(card, Card::new(Suit::Clubs, Rank::Joker));
+        let card = Card::try_from(42).unwrap();
+        assert_eq!(card, Card::new(Suit::Spades, Rank::Two));
+        let card = Card::try_from(55).unwrap();
+        assert_eq!(card, Card::new(Suit::Spades, Rank::Joker));
+    }
+
+    #[test]
+    fn test_card_try_from_usize_out_of_range() {
+        let result = Card::try_from(56);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_usize_from_card() {
+        let card = Card::new(Suit::Hearts, Rank::Two);
+        assert_eq!(usize::from(card), 0);
+        let card = Card::new(Suit::Hearts, Rank::Joker);
+        assert_eq!(usize::from(card), 13);
+        let card = Card::new(Suit::Diamonds, Rank::Two);
+        assert_eq!(usize::from(card), 14);
+        let card = Card::new(Suit::Diamonds, Rank::Joker);
+        assert_eq!(usize::from(card), 27);
+        let card = Card::new(Suit::Clubs, Rank::Two);
+        assert_eq!(usize::from(card), 28);
+        let card = Card::new(Suit::Clubs, Rank::Joker);
+        assert_eq!(usize::from(card), 41);
+        let card = Card::new(Suit::Spades, Rank::Two);
+        assert_eq!(usize::from(card), 42);
+        let card = Card::new(Suit::Spades, Rank::Joker);
+        assert_eq!(usize::from(card), 55);
+    }
+
+    #[test]
+    fn test_card_int_trip() {
+        for i in 0..56 {
+            let card = Card::try_from(i).unwrap();
+            let j = usize::from(card);
+            assert_eq!(i, j);
+        }
     }
 }
