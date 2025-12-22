@@ -18,6 +18,7 @@ impl Deck {
         Deck { cards }
     }
 
+    /// Creates a new Deck using a DeckFactory.
     pub fn from_factory<F>(factory: F) -> Self
     where
         F: DeckFactory,

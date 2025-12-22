@@ -65,6 +65,13 @@ impl Card{
         format!("{}{}", rank_str, suit_str)
     }
 
+    /// Displays the card using ascii art.
+    pub fn display_ascii(&self) -> String{
+        let rank_str = self.get_value_str();
+        let suit_str = self.get_suit_str();
+        format!("┌─────┐\n│{}   │\n│  {}  │\n│   {}│\n└─────┘", rank_str, suit_str, rank_str)
+    }
+
     pub fn get_value_str(&self) -> &str{
         match self.rank{
             Rank::Two => "2",
@@ -374,5 +381,12 @@ mod tests{
         assert!(card2.is_same_color(&card1));
         assert!(!card1.is_same_color(&card3));
         assert!(!card2.is_same_color(&card3));
+    }
+
+    #[test]
+    fn test_card_display_ascii(){
+        let card = Card::new(Suit::Hearts, Rank::Ace);
+        let expected = "┌─────┐\n│A   │\n│  ♥  │\n│   A│\n└─────┘";
+        assert_eq!(card.display_ascii(), expected);
     }
 }
