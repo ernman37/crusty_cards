@@ -2,7 +2,7 @@ use rand::rng;
 use rand::seq::SliceRandom;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
-use std::ops::{Sub, SubAssign, Add, AddAssign};
+use std::ops::{Sub, SubAssign, Add, AddAssign, Mul, MulAssign};
 
 use crate::Card;
 use crate::DeckFactory;
@@ -139,6 +139,34 @@ impl SubAssign<Card> for Deck {
     /// Removes specified Card from the deck in place.
     fn sub_assign(&mut self, rhs: Card) {
         *self = self.clone() - rhs;
+    }
+}
+
+impl Mul<usize> for Deck {
+    type Output = Deck;
+
+    /// Multiplies the deck by duplicating its cards n times, returns a new Deck.
+    fn mul(self, rhs: usize) -> Deck {
+        let mut new_deck = Deck::new(VecDeque::new());
+        for _ in 0..rhs {
+            for card in &self.cards {
+                new_deck.add_card(card.clone());
+            }
+        }
+        new_deck
+    }
+}
+
+impl MulAssign<usize> for Deck {
+    /// Multiplies the deck by duplicating its cards n times in place.
+    fn mul_assign(&mut self, rhs: usize) {
+        let original_deck = self.clone();
+        self.clear();
+        for _ in 0..rhs {
+            for card in &original_deck.cards {
+                self.add_card(card.clone());
+            }
+        }
     }
 }
 
@@ -496,5 +524,27 @@ mod tests {
             deck1.peek(),
             Some(&Card::new(Suit::Hearts, Rank::Ace))
         );
+    }
+
+    #[test]
+    fn test_deck_mul() {
+        let cards = VecDeque::from(vec![
+            Card::new(Suit::Hearts, Rank::Ace),
+            Card::new(Suit::Spades, Rank::King),
+        ]);
+        let deck = Deck::new(cards);
+        let multiplied_deck = deck * 3;
+        assert_eq!(multiplied_deck.len(), 6);
+    }
+
+    #[test]
+    fn test_deck_mul_assign() {
+        let cards = VecDeque::from(vec![
+            Card::new(Suit::Hearts, Rank::Ace),
+            Card::new(Suit::Spades, Rank::King),
+        ]);
+        let mut deck = Deck::new(cards);
+        deck *= 3;
+        assert_eq!(deck.len(), 6);
     }
 }
