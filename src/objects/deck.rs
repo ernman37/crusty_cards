@@ -2,7 +2,7 @@ use rand::rng;
 use rand::seq::SliceRandom;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
-use std::ops::Sub;
+use std::ops::{Sub, SubAssign, Add, AddAssign};
 
 use crate::Card;
 use crate::DeckFactory;
@@ -106,25 +106,81 @@ impl Deck {
     }
 }
 
+impl Add<Card> for Deck {
+    type Output = Deck;
+
+    /// Adds specified Card to the deck (top), returns a new Deck.
+    fn add(self, rhs: Card) -> Deck {
+        let mut new_deck = self.clone();
+        new_deck.add_card(rhs);
+        new_deck
+    }
+}
+
+impl AddAssign<Card> for Deck {
+    /// Adds specified Card to the deck (top) in place.
+    fn add_assign(&mut self, rhs: Card) {
+        self.add_card(rhs);
+    }
+}
+
 impl Sub<Card> for Deck {
     type Output = Deck;
 
-    /// Removes the specified card from the deck.
-    fn sub(mut self, rhs: Card) -> Deck {
-        self.cards.retain(|card| card != &rhs);
-        self
+    /// Removes specified Card from the deck, returns a new Deck.
+    fn sub(self, rhs: Card) -> Deck {
+        let mut new_deck = self.clone();
+        new_deck.cards.retain(|c| c != &rhs);
+        new_deck
+    }
+}
+
+impl SubAssign<Card> for Deck {
+    /// Removes specified Card from the deck in place.
+    fn sub_assign(&mut self, rhs: Card) {
+        *self = self.clone() - rhs;
+    }
+}
+
+impl Add<Deck> for Deck {
+    type Output = Deck;
+
+    /// Adds cards from rhs Deck to self Deck, returns a new Deck.
+    fn add(self, rhs: Deck) -> Deck {
+        let mut new_deck = self.clone();
+        for card in rhs.cards {
+            new_deck.add_card(card);
+        }
+        new_deck
+    }
+}
+
+impl AddAssign<Deck> for Deck {
+    /// Adds cards from rhs Deck to self Deck in place.
+    fn add_assign(&mut self, rhs: Deck) {
+        for card in rhs.cards {
+            self.add_card(card);
+        }
     }
 }
 
 impl Sub<Deck> for Deck {
     type Output = Deck;
 
-    /// Removes all cards in rhs from self.
-    fn sub(mut self, rhs: Deck) -> Deck {
+    /// Removes cards from rhs Deck from self Deck, returns a new Deck.
+    fn sub(self, rhs: Deck) -> Deck {
+        let mut new_deck = self.clone();
         for card in rhs.cards {
-            self.cards.retain(|c| c != &card);
+            new_deck = new_deck - card;
         }
-        self
+        new_deck
+    }
+}
+
+impl SubAssign<Deck> for Deck {
+    /// Removes cards from rhs Deck from self Deck in place.
+    fn sub_assign(&mut self, rhs: Deck) {
+        *self = self.clone() - rhs;
     }
 }
 
@@ -319,6 +375,24 @@ mod tests {
     }
 
     #[test]
+    fn test_deck_add_card_operator() {
+        let cards = VecDeque::from(vec![Card::new(Suit::Hearts, Rank::Ace)]);
+        let deck = Deck::new(cards);
+        let new_deck = deck + Card::new(Suit::Spades, Rank::King);
+        assert_eq!(new_deck.len(), 2);
+        assert_eq!(new_deck.peek(), Some(&Card::new(Suit::Spades, Rank::King)));
+    }
+
+    #[test]
+    fn test_deck_add_card_assign_operator() {
+        let cards = VecDeque::from(vec![Card::new(Suit::Hearts, Rank::Ace)]);
+        let mut deck = Deck::new(cards);
+        deck += Card::new(Suit::Spades, Rank::King);
+        assert_eq!(deck.len(), 2);
+        assert_eq!(deck.peek(), Some(&Card::new(Suit::Spades, Rank::King)));
+    }
+
+    #[test]
     fn test_deck_sub_card() {
         let cards = VecDeque::from(vec![
             Card::new(Suit::Hearts, Rank::Ace),
@@ -332,6 +406,54 @@ mod tests {
             subtracted_deck.peek(),
             Some(&Card::new(Suit::Spades, Rank::King))
         );
+    }
+
+    #[test]
+    fn test_deck_sub_assign_card() {
+        let cards = VecDeque::from(vec![
+            Card::new(Suit::Hearts, Rank::Ace),
+            Card::new(Suit::Spades, Rank::King),
+            Card::new(Suit::Diamonds, Rank::Queen),
+        ]);
+        let mut deck = Deck::new(cards);
+        deck -= Card::new(Suit::Hearts, Rank::Ace);
+        assert_eq!(deck.len(), 2);
+        assert_eq!(
+            deck.peek(),
+            Some(&Card::new(Suit::Spades, Rank::King))
+        );
+    }
+
+    #[test]
+    fn test_add_deck_deck() {
+        let cards1 = VecDeque::from(vec![
+            Card::new(Suit::Hearts, Rank::Ace),
+            Card::new(Suit::Spades, Rank::King),
+        ]);
+        let cards2 = VecDeque::from(vec![
+            Card::new(Suit::Diamonds, Rank::Queen),
+            Card::new(Suit::Clubs, Rank::Jack),
+        ]);
+        let deck1 = Deck::new(cards1);
+        let deck2 = Deck::new(cards2);
+        let combined_deck = deck1 + deck2;
+        assert_eq!(combined_deck.len(), 4);
+    }
+
+    #[test]
+    fn test_add_assign_deck_deck() {
+        let cards1 = VecDeque::from(vec![
+            Card::new(Suit::Hearts, Rank::Ace),
+            Card::new(Suit::Spades, Rank::King),
+        ]);
+        let cards2 = VecDeque::from(vec![
+            Card::new(Suit::Diamonds, Rank::Queen),
+            Card::new(Suit::Clubs, Rank::Jack),
+        ]);
+        let mut deck1 = Deck::new(cards1);
+        let deck2 = Deck::new(cards2);
+        deck1 += deck2;
+        assert_eq!(deck1.len(), 4);
     }
 
     #[test]
@@ -351,6 +473,27 @@ mod tests {
         assert_eq!(subtracted_deck.len(), 2);
         assert_eq!(
             subtracted_deck.peek(),
+            Some(&Card::new(Suit::Hearts, Rank::Ace))
+        );
+    }
+
+    #[test]
+    fn test_deck_sub_assign_deck() {
+        let cards1 = VecDeque::from(vec![
+            Card::new(Suit::Hearts, Rank::Ace),
+            Card::new(Suit::Spades, Rank::King),
+            Card::new(Suit::Diamonds, Rank::Queen),
+        ]);
+        let cards2 = VecDeque::from(vec![
+            Card::new(Suit::Spades, Rank::King),
+            Card::new(Suit::Clubs, Rank::Jack),
+        ]);
+        let mut deck1 = Deck::new(cards1);
+        let deck2 = Deck::new(cards2);
+        deck1 -= deck2;
+        assert_eq!(deck1.len(), 2);
+        assert_eq!(
+            deck1.peek(),
             Some(&Card::new(Suit::Hearts, Rank::Ace))
         );
     }
