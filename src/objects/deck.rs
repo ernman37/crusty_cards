@@ -1,16 +1,15 @@
-mod card;
-pub use card::{Card, Color, Suit, Rank};
-
 use std::collections::VecDeque;
-use std::ops::{Add, Sub};
+use rand::seq::SliceRandom;
+use rand::rng;
+
+use crate::Card;
 
 /// A struct representing a deck of playing cards.
+#[derive(Debug, Clone)]
 pub struct Deck {
     cards: VecDeque<Card>,
 }
 
-
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 impl Deck {
     /// Creates a new Deck with the given cards.
     pub fn new(cards: VecDeque<Card>) -> Self {
@@ -44,11 +43,10 @@ impl Deck {
 
     /// Shuffles the deck of cards.
     pub fn shuffle(&mut self) {
-        use rand::seq::SliceRandom;
-        use rand::thread_rng;
-
-        let mut rng = thread_rng();
-        self.cards.shuffle(&mut rng);
+        let mut rng = rng();
+        let mut cards_vec: Vec<Card> = self.cards.drain(..).collect();
+        cards_vec.shuffle(&mut rng);
+        self.cards = VecDeque::from(cards_vec);
     }
 
     /// Deals a card from the top of the deck.

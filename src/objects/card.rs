@@ -1,18 +1,17 @@
 
 /// Represents the color of a card. Useful for games that utilize card colors (e.g., Euchre)
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
-enum Color{
+pub enum Color{
     Red,
     Black,
 }
-
 /// Represents the suit of a card.
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
-enum Suit{
-    Hearts(Color::Red),
-    Diamonds(Color::Red),
-    Clubs(Color::Black),
-    Spades(Color::Black),
+pub enum Suit{
+    Hearts,
+    Diamonds,
+    Clubs,
+    Spades,
 }
 
 impl Suit{
@@ -36,7 +35,7 @@ impl Suit{
 
 /// Represents the rank of a card. Useful for games that utilize card ranks (e.g., Poker)
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
-enum Rank{
+pub enum Rank{
     Two,
     Three,
     Four,
@@ -61,15 +60,21 @@ pub struct Card{
 }
 
 impl Card{
-
     /// Creates a new card with the given suit and rank.
-    fn new(suit: Suit, rank: Rank) -> Self{
+    pub fn new(suit: Suit, rank: Rank) -> Self{
         Card { suit, rank }
     }
 
     /// Displays the card in a human-readable format.
-    fn display(&self) -> String{
-        let rank_str = match self.rank{
+    pub fn display(&self) -> String{
+        let rank_str = self.get_value_str();
+        let suit_str = self.get_suit_str();
+
+        format!("{}{}", rank_str, suit_str)
+    }
+
+    fn get_value_str(&self) -> &str{
+        match self.rank{
             Rank::Two => "2",
             Rank::Three => "3",
             Rank::Four => "4",
@@ -83,50 +88,51 @@ impl Card{
             Rank::Queen => "Q",
             Rank::King => "K",
             Rank::Ace => "A",
-        };
+            Rank::Joker => "U",
+        }
+    }
 
-        let suit_str = match self.suit{
+    fn get_suit_str(&self) -> &str{
+        match self.suit{
             Suit::Hearts => "♥",
             Suit::Diamonds => "♦",
             Suit::Clubs => "♣",
             Suit::Spades => "♠",
-        };
-
-        format!("{}{}", rank_str, suit_str)
+        }
     }
 
     /// Returns the color of the card.
-    fn color(&self) -> &Color{
+    pub fn color(&self) -> &Color{
         self.suit.color()
     }
 
     /// Returns the suit of the card.
-    fn suit(&self) -> &Suit{
+    pub fn suit(&self) -> &Suit{
         &self.suit
     }
 
     /// Returns the rank of the card.
-    fn rank(&self) -> &Rank{
+    pub fn rank(&self) -> &Rank{
         &self.rank
     }
 
     /// Checks if the card is an Ace.
-    fn is_ace(&self) -> bool{
+    pub fn is_ace(&self) -> bool{
         matches!(self.rank, Rank::Ace)
     }
 
     /// Checks if the card is a face card (Jack, Queen, King).
-    fn is_face_card(&self) -> bool{
+    pub fn is_face_card(&self) -> bool{
         matches!(self.rank, Rank::Jack | Rank::Queen | Rank::King)
     }
 
     /// Checks if the card is a value card (2-10).
-    fn is_value_card(&self) -> bool{
+    pub fn is_value_card(&self) -> bool{
         matches!(self.rank, Rank::Two | Rank::Three | Rank::Four | Rank::Five | Rank::Six | Rank::Seven | Rank::Eight | Rank::Nine | Rank::Ten)
     }
 
     /// Checks if the card is a Joker.
-    fn is_joker(&self) -> bool{
+    pub fn is_joker(&self) -> bool{
         matches!(self.rank, Rank::Joker)
     }
 }
