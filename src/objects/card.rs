@@ -1,10 +1,12 @@
 
+/// Represents the color of a card. Useful for games that utilize card colors (e.g., Euchre)
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 enum Color{
     Red,
     Black,
 }
 
+/// Represents the suit of a card.
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 enum Suit{
     Hearts(Color::Red),
@@ -13,7 +15,6 @@ enum Suit{
     Spades(Color::Black),
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 impl Suit{
     pub fn color(&self) -> &Color{
         match self{
@@ -33,6 +34,7 @@ impl Suit{
     }
 }
 
+/// Represents the rank of a card. Useful for games that utilize card ranks (e.g., Poker)
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 enum Rank{
     Two,
@@ -51,6 +53,7 @@ enum Rank{
     Joker,
 }
 
+/// Represents a playing card with a suit and rank.
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct Card{
     suit: Suit,
@@ -58,10 +61,13 @@ pub struct Card{
 }
 
 impl Card{
+
+    /// Creates a new card with the given suit and rank.
     fn new(suit: Suit, rank: Rank) -> Self{
         Card { suit, rank }
     }
 
+    /// Displays the card in a human-readable format.
     fn display(&self) -> String{
         let rank_str = match self.rank{
             Rank::Two => "2",
@@ -89,30 +95,37 @@ impl Card{
         format!("{}{}", rank_str, suit_str)
     }
 
+    /// Returns the color of the card.
     fn color(&self) -> &Color{
         self.suit.color()
     }
 
+    /// Returns the suit of the card.
     fn suit(&self) -> &Suit{
         &self.suit
     }
 
+    /// Returns the rank of the card.
     fn rank(&self) -> &Rank{
         &self.rank
     }
 
+    /// Checks if the card is an Ace.
     fn is_ace(&self) -> bool{
         matches!(self.rank, Rank::Ace)
     }
 
+    /// Checks if the card is a face card (Jack, Queen, King).
     fn is_face_card(&self) -> bool{
         matches!(self.rank, Rank::Jack | Rank::Queen | Rank::King)
     }
 
+    /// Checks if the card is a value card (2-10).
     fn is_value_card(&self) -> bool{
         matches!(self.rank, Rank::Two | Rank::Three | Rank::Four | Rank::Five | Rank::Six | Rank::Seven | Rank::Eight | Rank::Nine | Rank::Ten)
     }
 
+    /// Checks if the card is a Joker.
     fn is_joker(&self) -> bool{
         matches!(self.rank, Rank::Joker)
     }
