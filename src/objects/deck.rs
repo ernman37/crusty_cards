@@ -2,7 +2,9 @@ use std::collections::VecDeque;
 use rand::seq::SliceRandom;
 use rand::rng;
 
+
 use crate::Card;
+use crate::DeckFactory;
 
 /// A struct representing a deck of playing cards.
 #[derive(Debug, Clone)]
@@ -14,6 +16,15 @@ impl Deck {
     /// Creates a new Deck with the given cards.
     pub fn new(cards: VecDeque<Card>) -> Self {
         Deck { cards }
+    }
+
+    pub fn from_factory<F>(factory: F) -> Self
+    where
+        F: DeckFactory,
+    {
+        Self {
+            cards: factory.generate(),
+        }
     }
 
     /// Cuts the deck at the given index.
