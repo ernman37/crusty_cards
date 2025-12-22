@@ -15,12 +15,10 @@ pub enum Suit{
 }
 
 impl Suit{
-    pub fn color(&self) -> &Color{
+    pub const fn color(&self) -> Color{
         match self{
-            Suit::Hearts => &Color::Red,
-            Suit::Diamonds => &Color::Red,
-            Suit::Clubs => &Color::Black,
-            Suit::Spades => &Color::Black,
+            Suit::Hearts | Suit::Diamonds => Color::Red,
+            Suit::Clubs | Suit::Spades => Color::Black,
         }
     }
 }
@@ -120,7 +118,7 @@ impl Card{
     }
 
     /// Returns the color of the card.
-    pub fn color(&self) -> &Color{
+    pub fn color(&self) -> Color{
         self.suit.color()
     }
 
@@ -177,13 +175,13 @@ mod tests{
     #[test]
     fn test_suit_color(){
         let suit = Suit::Hearts;
-        assert_eq!(suit.color(), &Color::Red);
+        assert_eq!(suit.color(), Color::Red);
         let suit = Suit::Diamonds;
-        assert_eq!(suit.color(), &Color::Red);
+        assert_eq!(suit.color(), Color::Red);
         let suit = Suit::Clubs;
-        assert_eq!(suit.color(), &Color::Black);
+        assert_eq!(suit.color(), Color::Black);
         let suit = Suit::Spades;
-        assert_eq!(suit.color(), &Color::Black);
+        assert_eq!(suit.color(), Color::Black);
     }
 
     #[test]
@@ -195,20 +193,20 @@ mod tests{
     #[test]
     fn test_card_color(){
         let heart_card = Card::new(Suit::Hearts, Rank::Ace);
-        assert_eq!(heart_card.color(), &Color::Red);
-        assert_ne!(heart_card.color(), &Color::Black);
+        assert_eq!(heart_card.color(), Color::Red);
+        assert_ne!(heart_card.color(), Color::Black);
 
         let diamond_card = Card::new(Suit::Diamonds, Rank::Ace);
-        assert_eq!(diamond_card.color(), &Color::Red);
-        assert_ne!(diamond_card.color(), &Color::Black);
+        assert_eq!(diamond_card.color(), Color::Red);
+        assert_ne!(diamond_card.color(), Color::Black);
 
         let clubs_card = Card::new(Suit::Clubs, Rank::King);
-        assert_eq!(clubs_card.color(), &Color::Black);
-        assert_ne!(clubs_card.color(), &Color::Red);
+        assert_eq!(clubs_card.color(), Color::Black);
+        assert_ne!(clubs_card.color(), Color::Red);
 
         let spade_card = Card::new(Suit::Spades, Rank::Queen);
-        assert_eq!(spade_card.color(), &Color::Black);
-        assert_ne!(spade_card.color(), &Color::Red);
+        assert_eq!(spade_card.color(), Color::Black);
+        assert_ne!(spade_card.color(), Color::Red);
     }
 
     #[test]
