@@ -23,14 +23,6 @@ impl Suit{
             Suit::Spades => &Color::Black,
         }
     }
-
-    pub fn is_black(&self) -> bool{
-        matches!(self, Suit::Clubs | Suit::Spades)
-    }
-
-    pub fn is_red(&self) -> bool{
-        matches!(self, Suit::Hearts | Suit::Diamonds)
-    }
 }
 
 /// Represents the rank of a card. Useful for games that utilize card ranks (e.g., Poker)
@@ -73,7 +65,7 @@ impl Card{
         format!("{}{}", rank_str, suit_str)
     }
 
-    fn get_value_str(&self) -> &str{
+    pub fn get_value_str(&self) -> &str{
         match self.rank{
             Rank::Two => "2",
             Rank::Three => "3",
@@ -83,7 +75,7 @@ impl Card{
             Rank::Seven => "7",
             Rank::Eight => "8",
             Rank::Nine => "9",
-            Rank::Ten => "10",
+            Rank::Ten => "T",
             Rank::Jack => "J",
             Rank::Queen => "Q",
             Rank::King => "K",
@@ -92,7 +84,26 @@ impl Card{
         }
     }
 
-    fn get_suit_str(&self) -> &str{
+    pub fn get_value_int(&self) -> u8{
+        match self.rank{
+            Rank::Two => 2,
+            Rank::Three => 3,
+            Rank::Four => 4,
+            Rank::Five => 5,
+            Rank::Six => 6,
+            Rank::Seven => 7,
+            Rank::Eight => 8,
+            Rank::Nine => 9,
+            Rank::Ten => 10,
+            Rank::Jack => 11,
+            Rank::Queen => 12,
+            Rank::King => 13,
+            Rank::Ace => 1,
+            Rank::Joker => 0,
+        }
+    }
+
+    pub fn get_suit_str(&self) -> &str{
         match self.suit{
             Suit::Hearts => "♥",
             Suit::Diamonds => "♦",
@@ -134,5 +145,172 @@ impl Card{
     /// Checks if the card is a Joker.
     pub fn is_joker(&self) -> bool{
         matches!(self.rank, Rank::Joker)
+    }
+}
+
+
+#[cfg(test)]
+mod tests{
+    use super::{Card, Rank, Suit, Color};
+
+    #[test]
+    fn test_suit_color(){
+        let suit = Suit::Hearts;
+        assert_eq!(suit.color(), &Color::Red);
+        let suit = Suit::Diamonds;
+        assert_eq!(suit.color(), &Color::Red);
+        let suit = Suit::Clubs;
+        assert_eq!(suit.color(), &Color::Black);
+        let suit = Suit::Spades;
+        assert_eq!(suit.color(), &Color::Black);
+    }
+
+    #[test]
+    fn test_card_display(){
+        let card = Card::new(Suit::Hearts, Rank::Ace);
+        assert_eq!(card.display(), "A♥");
+    }
+
+    #[test]
+    fn test_card_color(){
+        let heart_card = Card::new(Suit::Hearts, Rank::Ace);
+        assert_eq!(heart_card.color(), &Color::Red);
+        assert_ne!(heart_card.color(), &Color::Black);
+
+        let diamond_card = Card::new(Suit::Diamonds, Rank::Ace);
+        assert_eq!(diamond_card.color(), &Color::Red);
+        assert_ne!(diamond_card.color(), &Color::Black);
+
+        let clubs_card = Card::new(Suit::Clubs, Rank::King);
+        assert_eq!(clubs_card.color(), &Color::Black);
+        assert_ne!(clubs_card.color(), &Color::Red);
+
+        let spade_card = Card::new(Suit::Spades, Rank::Queen);
+        assert_eq!(spade_card.color(), &Color::Black);
+        assert_ne!(spade_card.color(), &Color::Red);
+    }
+
+    #[test]
+    fn test_card_is_ace(){
+        let ace_card = Card::new(Suit::Hearts, Rank::Ace);
+        assert!(ace_card.is_ace());
+        assert!(!ace_card.is_face_card());
+        assert!(!ace_card.is_value_card());
+        assert!(!ace_card.is_joker());
+
+        let non_ace_card = Card::new(Suit::Hearts, Rank::King);
+        assert!(!non_ace_card.is_ace());
+    }
+
+    #[test]
+    fn test_card_is_face_card(){
+        let face_card = Card::new(Suit::Spades, Rank::Queen);
+        assert!(!face_card.is_ace());
+        assert!(face_card.is_face_card());
+        assert!(!face_card.is_value_card());
+        assert!(!face_card.is_joker());
+
+        let non_face_card = Card::new(Suit::Diamonds, Rank::Ten);
+        assert!(!non_face_card.is_face_card());
+    }
+
+    #[test]
+    fn test_card_is_value_card(){
+        let value_card = Card::new(Suit::Clubs, Rank::Seven);
+        assert!(!value_card.is_ace());
+        assert!(!value_card.is_face_card());
+        assert!(value_card.is_value_card());
+        assert!(!value_card.is_joker());
+
+        let non_value_card = Card::new(Suit::Hearts, Rank::Jack);
+        assert!(!non_value_card.is_value_card());
+    }
+
+    #[test]
+    fn test_card_is_joker(){
+        let joker_card = Card::new(Suit::Hearts, Rank::Joker);
+        assert!(!joker_card.is_ace());
+        assert!(!joker_card.is_face_card());
+        assert!(!joker_card.is_value_card());
+        assert!(joker_card.is_joker());
+
+        let non_joker_card = Card::new(Suit::Spades, Rank::Ace);
+        assert!(!non_joker_card.is_joker());
+    }
+
+    #[test]
+    fn test_card_get_value_str(){
+        let card = Card::new(Suit::Hearts, Rank::Two);
+        assert_eq!(card.get_value_str(), "2");
+        let card = Card::new(Suit::Hearts, Rank::Three);
+        assert_eq!(card.get_value_str(), "3");
+        let card = Card::new(Suit::Hearts, Rank::Four);
+        assert_eq!(card.get_value_str(), "4");
+        let card = Card::new(Suit::Hearts, Rank::Five);
+        assert_eq!(card.get_value_str(), "5");
+        let card = Card::new(Suit::Hearts, Rank::Six);
+        assert_eq!(card.get_value_str(), "6");
+        let card = Card::new(Suit::Hearts, Rank::Seven);
+        assert_eq!(card.get_value_str(), "7");
+        let card = Card::new(Suit::Hearts, Rank::Eight);
+        assert_eq!(card.get_value_str(), "8");
+        let card = Card::new(Suit::Hearts, Rank::Nine);
+        assert_eq!(card.get_value_str(), "9");
+        let card = Card::new(Suit::Hearts, Rank::Ten);
+        assert_eq!(card.get_value_str(), "T");
+        let card = Card::new(Suit::Hearts, Rank::Jack);
+        assert_eq!(card.get_value_str(), "J");
+        let card = Card::new(Suit::Hearts, Rank::Queen);
+        assert_eq!(card.get_value_str(), "Q");
+        let card = Card::new(Suit::Hearts, Rank::King);
+        assert_eq!(card.get_value_str(), "K");
+        let card = Card::new(Suit::Hearts, Rank::Ace);
+        assert_eq!(card.get_value_str(), "A");
+        let card = Card::new(Suit::Hearts, Rank::Joker);
+        assert_eq!(card.get_value_str(), "U");
+    }
+
+    #[test]
+    fn test_card_get_value_int(){
+        let card = Card::new(Suit::Hearts, Rank::Two);
+        assert_eq!(card.get_value_int(), 2);
+        let card = Card::new(Suit::Hearts, Rank::Three);
+        assert_eq!(card.get_value_int(), 3);
+        let card = Card::new(Suit::Hearts, Rank::Four);
+        assert_eq!(card.get_value_int(), 4);
+        let card = Card::new(Suit::Hearts, Rank::Five);
+        assert_eq!(card.get_value_int(), 5);
+        let card = Card::new(Suit::Hearts, Rank::Six);
+        assert_eq!(card.get_value_int(), 6);
+        let card = Card::new(Suit::Hearts, Rank::Seven);
+        assert_eq!(card.get_value_int(), 7);
+        let card = Card::new(Suit::Hearts, Rank::Eight);
+        assert_eq!(card.get_value_int(), 8);
+        let card = Card::new(Suit::Hearts, Rank::Nine);
+        assert_eq!(card.get_value_int(), 9);
+        let card = Card::new(Suit::Hearts, Rank::Ten);
+        assert_eq!(card.get_value_int(), 10);
+        let card = Card::new(Suit::Hearts, Rank::Jack);
+        assert_eq!(card.get_value_int(), 11);
+        let card = Card::new(Suit::Hearts, Rank::Queen);
+        assert_eq!(card.get_value_int(), 12);
+        let card = Card::new(Suit::Hearts, Rank::King);
+        assert_eq!(card.get_value_int(), 13);
+        let card = Card::new(Suit::Hearts, Rank::Ace);
+        assert_eq!(card.get_value_int(), 1);
+        let card = Card::new(Suit::Hearts, Rank::Joker);
+        assert_eq!(card.get_value_int(), 0);
+    }
+
+    #[test]
+    fn test_card_get_suit_str(){
+        let card = Card::new(Suit::Hearts, Rank::Ace);
+        assert_eq!(card.get_suit_str(), "♥");
+        let card = Card::new(Suit::Diamonds, Rank::Ace);
+        assert_eq!(card.get_suit_str(), "♦");
+        let card = Card::new(Suit::Clubs, Rank::Ace);
+        assert_eq!(card.get_suit_str(), "♣");
+        let card = Card::new(Suit::Spades, Rank::Ace);
+        assert_eq!(card.get_suit_str(), "♠");
     }
 }
