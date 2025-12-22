@@ -2,6 +2,7 @@ use rand::rng;
 use rand::seq::SliceRandom;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
+use std::ops::Sub;
 
 use crate::Card;
 use crate::DeckFactory;
@@ -102,6 +103,28 @@ impl Deck {
     /// Clears the deck of all cards.
     pub fn clear(&mut self) {
         self.cards.clear();
+    }
+}
+
+impl Sub<Card> for Deck {
+    type Output = Deck;
+
+    /// Removes the specified card from the deck.
+    fn sub(mut self, rhs: Card) -> Deck {
+        self.cards.retain(|card| card != &rhs);
+        self
+    }
+}
+
+impl Sub<Deck> for Deck {
+    type Output = Deck;
+
+    /// Removes all cards in rhs from self.
+    fn sub(mut self, rhs: Deck) -> Deck {
+        for card in rhs.cards {
+            self.cards.retain(|c| c != &card);
+        }
+        self
     }
 }
 
@@ -293,5 +316,42 @@ mod tests {
         let deserialized: Deck = serde_json::from_str(&serialized).unwrap();
         assert_eq!(deck.len(), deserialized.len());
         assert_eq!(deck.display(), deserialized.display());
+    }
+
+    #[test]
+    fn test_deck_sub_card() {
+        let cards = VecDeque::from(vec![
+            Card::new(Suit::Hearts, Rank::Ace),
+            Card::new(Suit::Spades, Rank::King),
+            Card::new(Suit::Diamonds, Rank::Queen),
+        ]);
+        let deck = Deck::new(cards);
+        let subtracted_deck = deck - Card::new(Suit::Hearts, Rank::Ace);
+        assert_eq!(subtracted_deck.len(), 2);
+        assert_eq!(
+            subtracted_deck.peek(),
+            Some(&Card::new(Suit::Spades, Rank::King))
+        );
+    }
+
+    #[test]
+    fn test_deck_sub_deck() {
+        let cards1 = VecDeque::from(vec![
+            Card::new(Suit::Hearts, Rank::Ace),
+            Card::new(Suit::Spades, Rank::King),
+            Card::new(Suit::Diamonds, Rank::Queen),
+        ]);
+        let cards2 = VecDeque::from(vec![
+            Card::new(Suit::Spades, Rank::King),
+            Card::new(Suit::Clubs, Rank::Jack),
+        ]);
+        let deck1 = Deck::new(cards1);
+        let deck2 = Deck::new(cards2);
+        let subtracted_deck = deck1 - deck2;
+        assert_eq!(subtracted_deck.len(), 2);
+        assert_eq!(
+            subtracted_deck.peek(),
+            Some(&Card::new(Suit::Hearts, Rank::Ace))
+        );
     }
 }
