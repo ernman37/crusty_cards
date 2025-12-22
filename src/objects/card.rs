@@ -74,6 +74,7 @@ impl Card {
         )
     }
 
+    /// Returns the string representation of the card's rank.
     pub fn get_value_str(&self) -> &str {
         match self.rank {
             Rank::Two => "2",
