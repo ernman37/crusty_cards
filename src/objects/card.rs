@@ -146,8 +146,22 @@ impl Card{
     pub fn is_joker(&self) -> bool{
         matches!(self.rank, Rank::Joker)
     }
-}
 
+    /// Compares the rank of this card with another card.
+    pub fn is_same_rank(&self, other: &Card) -> bool{
+        self.rank == other.rank
+    }
+
+    /// Compares the suit of this card with another card.
+    pub fn is_same_suit(&self, other: &Card) -> bool{
+        self.suit == other.suit
+    }
+
+    /// Compares the color of this card with another card.
+    pub fn is_same_color(&self, other: &Card) -> bool{
+        self.color() == other.color()
+    }
+}
 
 #[cfg(test)]
 mod tests{
@@ -312,5 +326,53 @@ mod tests{
         assert_eq!(card.get_suit_str(), "♣");
         let card = Card::new(Suit::Spades, Rank::Ace);
         assert_eq!(card.get_suit_str(), "♠");
+    }
+
+    #[test]
+    fn test_card_is_equal(){
+        let card1 = Card::new(Suit::Hearts, Rank::Ace);
+        let card2 = Card::new(Suit::Hearts, Rank::Ace);
+        let card3 = Card::new(Suit::Spades, Rank::King);
+
+        assert!(card1 == card2);
+        assert!(card2 == card1);
+        assert!(card1 != card3);
+        assert!(card2 != card3);
+    }
+
+    #[test]
+    fn test_card_is_same_rank(){
+        let card1 = Card::new(Suit::Hearts, Rank::Ace);
+        let card2 = Card::new(Suit::Spades, Rank::Ace);
+        let card3 = Card::new(Suit::Diamonds, Rank::King);
+
+        assert!(card1.is_same_rank(&card2));
+        assert!(card2.is_same_rank(&card1));
+        assert!(!card1.is_same_rank(&card3));
+        assert!(!card2.is_same_rank(&card3));
+    }
+
+    #[test]
+    fn test_card_is_same_suit(){
+        let card1 = Card::new(Suit::Hearts, Rank::Ace);
+        let card2 = Card::new(Suit::Hearts, Rank::King);
+        let card3 = Card::new(Suit::Spades, Rank::Ace);
+
+        assert!(card1.is_same_suit(&card2));
+        assert!(card2.is_same_suit(&card1));
+        assert!(!card1.is_same_suit(&card3));
+        assert!(!card2.is_same_suit(&card3));
+    }
+
+    #[test]
+    fn test_card_is_same_color(){
+        let card1 = Card::new(Suit::Hearts, Rank::Ace);
+        let card2 = Card::new(Suit::Diamonds, Rank::King);
+        let card3 = Card::new(Suit::Spades, Rank::Ace);
+
+        assert!(card1.is_same_color(&card2));
+        assert!(card2.is_same_color(&card1));
+        assert!(!card1.is_same_color(&card3));
+        assert!(!card2.is_same_color(&card3));
     }
 }
