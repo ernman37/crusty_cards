@@ -1,10 +1,10 @@
 pub mod objects;
 
 pub use objects::card::Card;
-pub use objects::card::Color;
-pub use objects::card::Rank;
-pub use objects::card::Suit;
+pub use objects::color::Color;
 pub use objects::deck::Deck;
+pub use objects::rank::Rank;
+pub use objects::suit::Suit;
 
 pub mod traits;
 
