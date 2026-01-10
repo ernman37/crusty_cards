@@ -94,6 +94,20 @@ impl Card {
     pub fn is_same_color(&self, other: &Card) -> bool {
         self.color() == other.color()
     }
+
+    pub fn as_csv_row(&self) -> String {
+        format!("{},{}", self.rank, self.suit)
+    }
+
+    pub fn from_csv_row(row: &str) -> Result<Self, &'static str> {
+        let parts: Vec<&str> = row.split(',').collect();
+        if parts.len() != 2 {
+            return Err("Invalid CSV row format");
+        }
+        let rank = Rank::from_str(parts[0]).map_err(|_| "Invalid rank")?;
+        let suit = Suit::from_str(parts[1]).map_err(|_| "Invalid suit")?;
+        Ok(Card::new(suit, rank))
+    }
 }
 
 impl From<Card> for u8 {

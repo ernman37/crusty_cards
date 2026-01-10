@@ -488,3 +488,37 @@ fn test_card_from_str() {
     let card = Card::from_str(card_str).unwrap();
     assert_eq!(card, Card::new(Suit::Diamonds, Rank::Two));
 }
+
+#[test]
+fn test_card_as_csv_row() {
+    let card = Card::new(Suit::Hearts, Rank::Two);
+    assert_eq!(card.as_csv_row(), "2,♥");
+
+    let card = Card::new(Suit::Hearts, Rank::Joker);
+    assert_eq!(card.as_csv_row(), "U,♥");
+
+    let card = Card::new(Suit::Diamonds, Rank::Two);
+    assert_eq!(card.as_csv_row(), "2,♦");
+
+    let card = Card::new(Suit::Spades, Rank::Joker);
+    assert_eq!(card.as_csv_row(), "U,♠");
+}
+
+#[test]
+fn test_card_from_csv_row() {
+    let csv_row = "2,♥";
+    let card = Card::from_csv_row(csv_row).unwrap();
+    assert_eq!(card, Card::new(Suit::Hearts, Rank::Two));
+
+    let csv_row = "U,♥";
+    let card = Card::from_csv_row(csv_row).unwrap();
+    assert_eq!(card, Card::new(Suit::Hearts, Rank::Joker));
+
+    let csv_row = "2,♦";
+    let card = Card::from_csv_row(csv_row).unwrap();
+    assert_eq!(card, Card::new(Suit::Diamonds, Rank::Two));
+
+    let csv_row = "U,♠";
+    let card = Card::from_csv_row(csv_row).unwrap();
+    assert_eq!(card, Card::new(Suit::Spades, Rank::Joker));
+}
