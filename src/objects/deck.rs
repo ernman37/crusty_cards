@@ -212,6 +212,7 @@ impl Deck {
         self.cards = VecDeque::from(cards_vec);
     }
 
+    /// Returns a CSV representation of the deck.
     pub fn as_csv(&self) -> String {
         let mut csv = "Rank,Suit\n".to_string();
         for card in &self.cards {
@@ -221,6 +222,7 @@ impl Deck {
         csv
     }
 
+    /// Creates a Deck from a CSV string.
     pub fn from_csv(s: &str) -> Result<Self, String> {
         let mut cards = VecDeque::new();
         for (i, line) in s.lines().enumerate() {

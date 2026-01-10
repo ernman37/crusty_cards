@@ -95,10 +95,12 @@ impl Card {
         self.color() == other.color()
     }
 
+    /// Returns a CSV representation of the card.
     pub fn as_csv_row(&self) -> String {
         format!("{},{}", self.rank, self.suit)
     }
 
+    /// Creates a Card from a CSV row.
     pub fn from_csv_row(row: &str) -> Result<Self, &'static str> {
         let parts: Vec<&str> = row.split(',').collect();
         if parts.len() != 2 {
