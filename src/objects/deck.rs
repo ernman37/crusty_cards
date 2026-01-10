@@ -3,6 +3,7 @@ use rand::seq::SliceRandom;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 use std::ops::{Sub, SubAssign, Add, AddAssign, Mul, MulAssign};
+use std::fmt;
 use std::convert::{From, TryFrom};
 
 use crate::Card;
@@ -12,6 +13,15 @@ use crate::DeckFactory;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Deck {
     cards: VecDeque<Card>,
+}
+
+impl fmt::Display for Deck {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        for card in &self.cards {
+            write!(f, "{} ", card)?;
+        }
+        Ok(())
+    }
 }
 
 impl Deck {
@@ -49,11 +59,6 @@ impl Deck {
     /// Checks if the deck is empty.
     pub fn is_empty(&self) -> bool {
         self.cards.is_empty()
-    }
-
-    /// Displays the cards in the deck as a vector of strings.
-    pub fn display(&self) -> Vec<String> {
-        self.cards.iter().map(|card| card.display()).collect()
     }
 
     /// Shuffles the deck of cards.
@@ -288,10 +293,10 @@ mod tests {
             Card::new(Suit::Spades, Rank::King),
         ]);
         let deck = Deck::new(cards);
-        let display = deck.display();
-        let card1 = Card::new(Suit::Hearts, Rank::Ace).display();
-        let card2 = Card::new(Suit::Spades, Rank::King).display();
-        assert_eq!(display, vec![card1, card2]);
+        let display = format!("{}", deck);
+        let card1 = Card::new(Suit::Hearts, Rank::Ace);
+        let card2 = Card::new(Suit::Spades, Rank::King);
+        assert_eq!(display, format!("{} {} ", card1, card2));
     }
 
     #[test]
@@ -303,11 +308,11 @@ mod tests {
             Card::new(Suit::Clubs, Rank::Jack),
         ]);
         let mut deck = Deck::new(cards);
-        let original_order: Vec<String> = deck.display();
+        let original_order = format!("{}", deck);
         // Try shuffling multiple times to ensure order changes (very low chance of false negative)
         for _ in 0..100 {
             deck.shuffle_times(1);
-            let shuffled_order: Vec<String> = deck.display();
+            let shuffled_order = format!("{}", deck);
             if original_order != shuffled_order {
                 return;
             }
@@ -424,7 +429,7 @@ mod tests {
         let serialized = serde_json::to_string(&deck).unwrap();
         let deserialized: Deck = serde_json::from_str(&serialized).unwrap();
         assert_eq!(deck.len(), deserialized.len());
-        assert_eq!(deck.display(), deserialized.display());
+        assert_eq!(deck.to_string(), deserialized.to_string());
     }
 
     #[test]

@@ -62,7 +62,7 @@ mod tests {
         assert_eq!(deck.len(), 54);
         let joker_count = deck
             .iter()
-            .filter(|&card| *card.rank() == Rank::Joker)
+            .filter(|&card| card.rank() == Rank::Joker)
             .count();
         assert_eq!(joker_count, 2);
     }
