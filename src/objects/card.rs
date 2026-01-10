@@ -95,6 +95,160 @@ impl Card {
     }
 }
 
+impl From<Card> for u8 {
+    fn from(card: Card) -> Self {
+        let suit_value = card.suit.value();
+        let rank_value = card.rank.value();
+        suit_value * 14 + rank_value
+    }
+}
+
+impl From<Card> for i8 {
+    fn from(card: Card) -> Self {
+        u8::from(card) as i8
+    }
+}
+
+impl From<Card> for u16 {
+    fn from(card: Card) -> Self {
+        Self::from(u8::from(card)) as u16
+    }
+}
+
+impl From<Card> for i16 {
+    fn from(card: Card) -> Self {
+        Self::from(u8::from(card)) as i16
+    }
+}
+
+impl From<Card> for u32 {
+    fn from(card: Card) -> Self {
+        Self::from(u8::from(card)) as u32
+    }
+}
+
+impl From<Card> for i32 {
+    fn from(card: Card) -> Self {
+        Self::from(u8::from(card)) as i32
+    }
+}
+
+impl From<Card> for u64 {
+    fn from(card: Card) -> Self {
+        Self::from(u8::from(card)) as u64
+    }
+}
+
+impl From<Card> for i64 {
+    fn from(card: Card) -> Self {
+        Self::from(u8::from(card)) as i64
+    }
+}
+
+impl From<Card> for usize {
+    fn from(card: Card) -> Self {
+        Self::from(u8::from(card)) as usize
+    }
+}
+
+impl From<Card> for isize {
+    fn from(card: Card) -> Self {
+        Self::from(u8::from(card)) as isize
+    }
+}
+
+impl TryFrom<u8> for Card {
+    type Error = &'static str;
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        if value >= 56 {
+            return Err("Value out of range for standard 56-card deck (including 4 jokers, one of each suit)");
+        }
+
+        let suit = Suit::ALL[(value / 14) as usize];
+        let rank = Rank::ALL[(value % 14) as usize];
+
+        Ok(Card::new(suit, rank))
+    }
+}
+
+impl TryFrom<i8> for Card {
+    type Error = &'static str;
+
+    fn try_from(value: i8) -> Result<Self, Self::Error> {
+        if value < 0 || value as u8 >= 56 {
+            return Err("Value out of range for standard 56-card deck (including 4 jokers, one of each suit)");
+        }
+        Self::try_from(value as u8)
+    }
+}
+
+impl TryFrom<u16> for Card {
+    type Error = &'static str;
+
+    fn try_from(value: u16) -> Result<Self, Self::Error> {
+        if value >= 56 {
+            return Err("Value out of range for standard 56-card deck (including 4 jokers, one of each suit)");
+        }
+        Self::try_from(value as u8)
+    }
+}
+
+impl TryFrom<i16> for Card {
+    type Error = &'static str;
+
+    fn try_from(value: i16) -> Result<Self, Self::Error> {
+        if value < 0 || value as u8 >= 56 {
+            return Err("Value out of range for standard 56-card deck (including 4 jokers, one of each suit)");
+        }
+        Self::try_from(value as u8)
+    }
+}
+
+impl TryFrom<u32> for Card {
+    type Error = &'static str;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        if value >= 56 {
+            return Err("Value out of range for standard 56-card deck (including 4 jokers, one of each suit)");
+        }
+        Self::try_from(value as u8)
+    }
+}
+
+impl TryFrom<i32> for Card {
+    type Error = &'static str;
+
+    fn try_from(value: i32) -> Result<Self, Self::Error> {
+        if value < 0 || value as u8 >= 56 {
+            return Err("Value out of range for standard 56-card deck (including 4 jokers, one of each suit)");
+        }
+        Self::try_from(value as u8)
+    }
+}
+
+impl TryFrom<u64> for Card {
+    type Error = &'static str;
+
+    fn try_from(value: u64) -> Result<Self, Self::Error> {
+        if value >= 56 {
+            return Err("Value out of range for standard 56-card deck (including 4 jokers, one of each suit)");
+        }
+        Self::try_from(value as u8)
+    }
+}
+
+impl TryFrom<i64> for Card {
+    type Error = &'static str;
+
+    fn try_from(value: i64) -> Result<Self, Self::Error> {
+        if value < 0 || value as u8 >= 56 {
+            return Err("Value out of range for standard 56-card deck (including 4 jokers, one of each suit)");
+        }
+        Self::try_from(value as u8)
+    }
+}
+
 impl TryFrom<usize> for Card {
     type Error = &'static str;
 
@@ -102,20 +256,17 @@ impl TryFrom<usize> for Card {
         if value >= 56 {
             return Err("Value out of range for standard 56-card deck (including 4 jokers, one of each suit)");
         }
-
-        let suit = Suit::ALL[value / 14];
-        let rank = Rank::ALL[value % 14];
-
-        Ok(Card::new(suit, rank))
+        Self::try_from(value as u8)
     }
 }
 
-impl From<Card> for usize {
-    fn from(card: Card) -> Self {
-        let suit_value = card.suit.value() as usize;
+impl TryFrom<isize> for Card {
+    type Error = &'static str;
 
-        let rank_value = card.rank.value() as usize;
-
-        suit_value * 14 + rank_value
+    fn try_from(value: isize) -> Result<Self, Self::Error> {
+        if value < 0 || value as u8 >= 56 {
+            return Err("Value out of range for standard 56-card deck (including 4 jokers, one of each suit)");
+        }
+        Self::try_from(value as u8)
     }
 }
