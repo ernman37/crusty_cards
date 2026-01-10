@@ -86,6 +86,12 @@ pub struct Card {
     rank: Rank,
 }
 
+impl fmt::Display for Card {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}{}", self.rank, self.suit)
+    }
+}
+
 impl Card {
     /// Creates a new card with the given suit and rank.
     pub fn new(suit: Suit, rank: Rank) -> Self {
