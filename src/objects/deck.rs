@@ -52,7 +52,7 @@ impl Deck {
 
     /// Displays the cards in the deck as a vector of strings.
     pub fn display(&self) -> Vec<String> {
-        self.cards.iter().map(|card| card.display()).collect()
+        self.cards.iter().map(|card| format!("{}", card)).collect()
     }
 
     /// Shuffles the deck of cards.
@@ -264,9 +264,9 @@ mod tests {
         ]);
         let deck = Deck::new(cards);
         let display = deck.display();
-        let card1 = Card::new(Suit::Hearts, Rank::Ace).display();
-        let card2 = Card::new(Suit::Spades, Rank::King).display();
-        assert_eq!(display, vec![card1, card2]);
+        let card1 = Card::new(Suit::Hearts, Rank::Ace);
+        let card2 = Card::new(Suit::Spades, Rank::King);
+        assert_eq!(display, vec![format!("{}", card1), format!("{}", card2)]);
     }
 
     #[test]
