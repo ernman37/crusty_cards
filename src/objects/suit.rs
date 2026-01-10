@@ -40,7 +40,10 @@ impl Suit {
         }
     }
 
-    /// Returns integer value for the suit
+    /// Returns an integer index for the suit, ranging from 0 (Hearts) to 3 (Spades).
+    ///
+    /// This is useful for compact suit representations, such as card-to-integer
+    /// conversions or array indexing by suit.
     pub const fn value(&self) -> u8 {
         match self {
             Suit::Hearts => 0,
