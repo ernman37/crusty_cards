@@ -257,7 +257,7 @@ impl TryFrom<i64> for Card {
     type Error = &'static str;
 
     fn try_from(value: i64) -> Result<Self, Self::Error> {
-        if value < 0 || value as u8 >= 56 {
+        if value < 0 || value >= 56 {
             return Err("Value out of range for standard 56-card deck (including 4 jokers, one of each suit)");
         }
         Self::try_from(value as u8)
