@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
 use std::fmt;
+use std::str::FromStr;
 
 /// Represents the rank of a card. Useful for games that utilize card ranks (e.g., Poker)
 ///
@@ -118,5 +119,29 @@ impl PartialOrd for Rank {
 impl fmt::Display for Rank {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.symbol())
+    }
+}
+
+impl FromStr for Rank {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_uppercase().as_str() {
+            "2" | "TWO" => Ok(Rank::Two),
+            "3" | "THREE" => Ok(Rank::Three),
+            "4" | "FOUR" => Ok(Rank::Four),
+            "5" | "FIVE" => Ok(Rank::Five),
+            "6" | "SIX" => Ok(Rank::Six),
+            "7" | "SEVEN" => Ok(Rank::Seven),
+            "8" | "EIGHT" => Ok(Rank::Eight),
+            "9" | "NINE" => Ok(Rank::Nine),
+            "T" | "TEN" | "10" => Ok(Rank::Ten),
+            "J" | "JACK" => Ok(Rank::Jack),
+            "Q" | "QUEEN" => Ok(Rank::Queen),
+            "K" | "KING" => Ok(Rank::King),
+            "A" | "ACE" => Ok(Rank::Ace),
+            "U" | "JOKER" => Ok(Rank::Joker),
+            _ => Err(format!("Invalid rank symbol: {}", s)),
+        }
     }
 }

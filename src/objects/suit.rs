@@ -62,11 +62,11 @@ impl FromStr for Suit {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s.to_lowercase().as_str() {
-            "hearts" | "h" | "♥" => Ok(Suit::Hearts),
-            "diamonds" | "d" | "♦" => Ok(Suit::Diamonds),
-            "clubs" | "c" | "♣" => Ok(Suit::Clubs),
-            "spades" | "s" | "♠" => Ok(Suit::Spades),
+        match s.to_uppercase().as_str() {
+            "HEARTS" | "H" | "♥" => Ok(Suit::Hearts),
+            "DIAMONDS" | "D" | "♦" => Ok(Suit::Diamonds),
+            "CLUBS" | "C" | "♣" => Ok(Suit::Clubs),
+            "SPADES" | "S" | "♠" => Ok(Suit::Spades),
             _ => Err(format!("Invalid suit string: {}", s)),
         }
     }

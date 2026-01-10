@@ -1,5 +1,6 @@
 use crusty_cards::{Color, Suit};
 use std::collections::HashSet;
+use std::str::FromStr;
 
 #[test]
 fn test_suit_color() {
@@ -95,26 +96,22 @@ fn test_suit_value(){
 
 #[test]
 fn test_suit_from_str() {
-    assert_eq!("hearts".parse::<Suit>().unwrap(), Suit::Hearts);
-    assert_eq!("H".parse::<Suit>().unwrap(), Suit::Hearts);
-    assert_eq!("♥".parse::<Suit>().unwrap(), Suit::Hearts);
-
-    assert_eq!("diamonds".parse::<Suit>().unwrap(), Suit::Diamonds);
-    assert_eq!("D".parse::<Suit>().unwrap(), Suit::Diamonds);
-    assert_eq!("♦".parse::<Suit>().unwrap(), Suit::Diamonds);
-
-    assert_eq!("clubs".parse::<Suit>().unwrap(), Suit::Clubs);
-    assert_eq!("C".parse::<Suit>().unwrap(), Suit::Clubs);
-    assert_eq!("♣".parse::<Suit>().unwrap(), Suit::Clubs);
-
-    assert_eq!("spades".parse::<Suit>().unwrap(), Suit::Spades);
-    assert_eq!("S".parse::<Suit>().unwrap(), Suit::Spades);
-    assert_eq!("♠".parse::<Suit>().unwrap(), Suit::Spades);
-
-    // Case insensitive
-    assert_eq!("hEaRtS".parse::<Suit>().unwrap(), Suit::Hearts);
-
-    // Invalid inputs
-    assert!("x".parse::<Suit>().is_err());
-    assert!("".parse::<Suit>().is_err());
+    // Hearts
+    assert_eq!(Suit::from_str("Hearts"), Ok(Suit::Hearts));
+    assert_eq!(Suit::from_str("h"), Ok(Suit::Hearts));
+    assert_eq!(Suit::from_str("♥"), Ok(Suit::Hearts));
+    // Diamonds
+    assert_eq!(Suit::from_str("D"), Ok(Suit::Diamonds));
+    assert_eq!(Suit::from_str("diamonds"), Ok(Suit::Diamonds));
+    assert_eq!(Suit::from_str("♦"), Ok(Suit::Diamonds));
+    // Clubs
+    assert_eq!(Suit::from_str("C"), Ok(Suit::Clubs));
+    assert_eq!(Suit::from_str("♣"), Ok(Suit::Clubs));
+    assert_eq!(Suit::from_str("clubs"), Ok(Suit::Clubs));
+    // Spades
+    assert_eq!(Suit::from_str("S"), Ok(Suit::Spades));
+    assert_eq!(Suit::from_str("spades"), Ok(Suit::Spades));
+    assert_eq!(Suit::from_str("♠"), Ok(Suit::Spades));
+    // Invalid suit
+    assert_eq!(Suit::from_str("X"), Err("Invalid suit string: X".to_string()));
 }
