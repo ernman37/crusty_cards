@@ -434,3 +434,65 @@ fn test_deck_sort_by_trump_comparator() {
     assert_eq!(card4.suit(), Suit::Hearts);
     assert_eq!(card4.rank(), Rank::Seven);
 }
+
+#[test]
+fn test_deck_iter() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+    ]);
+    let deck = Deck::new(cards);
+
+    let mut iter = deck.iter();
+    assert_eq!(iter.next().unwrap().rank(), Rank::Ace);
+    assert_eq!(iter.next().unwrap().rank(), Rank::King);
+    assert!(iter.next().is_none());
+}
+
+#[test]
+fn test_deck_into_iter() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+    ]);
+    let deck = Deck::new(cards);
+
+    let mut iter = deck.into_iter();
+    assert_eq!(iter.next().unwrap().rank(), Rank::Ace);
+    assert_eq!(iter.next().unwrap().rank(), Rank::King);
+    assert!(iter.next().is_none());
+}
+
+#[test]
+fn test_deck_iter_mut() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+    ]);
+    let mut deck = Deck::new(cards);
+
+    for card in deck.iter_mut() {
+        if card.rank() == Rank::Ace {
+            *card = Card::new(Suit::Hearts, Rank::Two); // Change Ace to Two
+        }
+    }
+
+    let mut iter = deck.iter();
+    assert_eq!(iter.next().unwrap().rank(), Rank::Two);
+    assert_eq!(iter.next().unwrap().rank(), Rank::King);
+}
+
+#[test]
+fn test_deck_into_iter_mut() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+    ]);
+    let mut deck = Deck::new(cards);
+
+    for card in &mut deck {
+        if card.rank() == Rank::Ace {
+            *card = Card::new(Suit::Hearts, Rank::Two);
+        }
+    }
+}
