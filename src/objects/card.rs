@@ -3,14 +3,14 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 
 /// Represents the color of a card. Useful for games that utilize card colors (e.g., Euchre)
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 pub enum Color {
     Red,
     Black,
 }
 
 /// Represents the suit of a card.
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 pub enum Suit {
     Hearts,
     Diamonds,
@@ -48,6 +48,9 @@ impl fmt::Display for Suit {
 }
 
 /// Represents the rank of a card. Useful for games that utilize card ranks (e.g., Poker)
+///
+/// Note: `Ord` is implemented with Ace high (14) and Joker highest (15).
+/// For custom ordering (e.g., Ace low), use a `CardComparator`.
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize, Deserialize)]
 pub enum Rank {
     Two,
@@ -117,6 +120,40 @@ impl Rank {
             Rank::Ace => "A",
             Rank::Joker => "U",
         }
+    }
+
+    /// Returns the standard value of the rank for ordering purposes.
+    /// Ace is high (14), Joker is highest (15).
+    /// For custom values, use a `CardComparator`.
+    pub const fn value(&self) -> u8 {
+        match self {
+            Rank::Two => 2,
+            Rank::Three => 3,
+            Rank::Four => 4,
+            Rank::Five => 5,
+            Rank::Six => 6,
+            Rank::Seven => 7,
+            Rank::Eight => 8,
+            Rank::Nine => 9,
+            Rank::Ten => 10,
+            Rank::Jack => 11,
+            Rank::Queen => 12,
+            Rank::King => 13,
+            Rank::Ace => 14,
+            Rank::Joker => 15,
+        }
+    }
+}
+
+impl Ord for Rank {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.value().cmp(&other.value())
+    }
+}
+
+impl PartialOrd for Rank {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
     }
 }
 
@@ -739,5 +776,55 @@ mod tests {
 
         // Different cards should (almost certainly) produce different hashes
         assert_ne!(hasher1.finish(), hasher2.finish());
+    }
+
+    // === Ordering tests ===
+
+    #[test]
+    fn test_rank_ordering() {
+        assert!(Rank::Ace > Rank::King);
+        assert!(Rank::King > Rank::Queen);
+        assert!(Rank::Queen > Rank::Jack);
+        assert!(Rank::Jack > Rank::Ten);
+        assert!(Rank::Ten > Rank::Two);
+        assert!(Rank::Joker > Rank::Ace);
+    }
+
+    #[test]
+    fn test_rank_value() {
+        assert_eq!(Rank::Two.value(), 2);
+        assert_eq!(Rank::Ten.value(), 10);
+        assert_eq!(Rank::Jack.value(), 11);
+        assert_eq!(Rank::Queen.value(), 12);
+        assert_eq!(Rank::King.value(), 13);
+        assert_eq!(Rank::Ace.value(), 14);
+        assert_eq!(Rank::Joker.value(), 15);
+    }
+
+    #[test]
+    fn test_rank_sorting() {
+        let mut ranks = vec![Rank::King, Rank::Two, Rank::Ace, Rank::Seven];
+        ranks.sort();
+        assert_eq!(ranks, vec![Rank::Two, Rank::Seven, Rank::King, Rank::Ace]);
+    }
+
+    #[test]
+    fn test_suit_ordering() {
+        // Derived ordering based on definition order
+        assert!(Suit::Hearts < Suit::Diamonds);
+        assert!(Suit::Diamonds < Suit::Clubs);
+        assert!(Suit::Clubs < Suit::Spades);
+    }
+
+    #[test]
+    fn test_suit_sorting() {
+        let mut suits = vec![Suit::Spades, Suit::Hearts, Suit::Clubs, Suit::Diamonds];
+        suits.sort();
+        assert_eq!(suits, vec![Suit::Hearts, Suit::Diamonds, Suit::Clubs, Suit::Spades]);
+    }
+
+    #[test]
+    fn test_color_ordering() {
+        assert!(Color::Red < Color::Black);
     }
 }
