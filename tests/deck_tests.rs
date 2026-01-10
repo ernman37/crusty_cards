@@ -642,3 +642,25 @@ fn test_deck_empty_yaml_roundtrip() {
 
     assert!(restored.is_empty());
 }
+
+#[test]
+fn test_deck_to_and_from_csv() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+        Card::new(Suit::Diamonds, Rank::Queen),
+    ]);
+    let deck = Deck::new(cards);
+
+    let csv = deck.as_csv();
+    let expected = "Rank,Suit\nA,♥\nK,♠\nQ,♦\n";
+    assert_eq!(csv, expected);
+
+    let restored = Deck::from_csv(&csv).unwrap();
+    assert_eq!(deck.len(), restored.len());
+
+    // Verify cards match
+    for (original, restored) in deck.iter().zip(restored.iter()) {
+        assert_eq!(original, restored);
+    }
+}

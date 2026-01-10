@@ -211,6 +211,29 @@ impl Deck {
         cards_vec.sort_by(compare);
         self.cards = VecDeque::from(cards_vec);
     }
+
+    pub fn as_csv(&self) -> String {
+        let mut csv = "Rank,Suit\n".to_string();
+        for card in &self.cards {
+            csv.push_str(&card.as_csv_row());
+            csv.push('\n');
+        }
+        csv
+    }
+
+    pub fn from_csv(s: &str) -> Result<Self, String> {
+        let mut cards = VecDeque::new();
+        for (i, line) in s.lines().enumerate() {
+            if i == 0 {
+                continue; // Skip header
+            }
+            match Card::from_csv_row(line) {
+                Ok(card) => cards.push_back(card),
+                Err(e) => return Err(format!("Failed to parse line {}: {}", i + 1, e)),
+            }
+        }
+        Ok(Deck::new(cards))
+    }
 }
 
 impl Add<Card> for Deck {
