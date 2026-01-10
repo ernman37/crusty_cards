@@ -225,7 +225,10 @@ impl Deck {
         let mut cards = VecDeque::new();
         for (i, line) in s.lines().enumerate() {
             if i == 0 {
-                continue; // Skip header
+                continue;
+            }
+            if line.trim().is_empty() {
+                continue;
             }
             match Card::from_csv_row(line) {
                 Ok(card) => cards.push_back(card),
