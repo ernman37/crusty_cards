@@ -3,7 +3,12 @@ name = "crusty_cards"
 version = "0.0.0"
 edition = "2021"
 description = "Playing Card and Deck Library"
+authors = ["Ernest Duckworth IV"]
 license = "Beerware"
+license-file = "LICENSE"
+readme = "README.md"
+keywords = ['cards', 'playing-cards', 'casino', 'card-games', 'games']
+categories = []
 
 [dependencies]
 rand = "0.9.2"
