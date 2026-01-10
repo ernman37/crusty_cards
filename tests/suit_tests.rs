@@ -84,3 +84,11 @@ fn test_suit_black_constant() {
     assert!(Suit::BLACK.contains(&Suit::Clubs));
     assert!(Suit::BLACK.contains(&Suit::Spades));
 }
+
+#[test]
+fn test_suit_value(){
+    assert_eq!(Suit::Hearts.value(), 0);
+    assert_eq!(Suit::Diamonds.value(), 1);
+    assert_eq!(Suit::Clubs.value(), 2);
+    assert_eq!(Suit::Spades.value(), 3);
+}

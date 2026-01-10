@@ -39,6 +39,16 @@ impl Suit {
             Suit::Spades => "♠",
         }
     }
+
+    /// Returns integer value for the suit
+    pub const fn value(&self) -> u8 {
+        match self {
+            Suit::Hearts => 0,
+            Suit::Diamonds => 1,
+            Suit::Clubs => 2,
+            Suit::Spades => 3,
+        }
+    }
 }
 
 impl fmt::Display for Suit {
