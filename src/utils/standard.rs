@@ -7,26 +7,9 @@ pub struct Standard52;
 
 impl DeckFactory for Standard52 {
     fn generate(&self) -> VecDeque<Card> {
-        let suits = [Suit::Hearts, Suit::Diamonds, Suit::Clubs, Suit::Spades];
-        let ranks = [
-            Rank::Two,
-            Rank::Three,
-            Rank::Four,
-            Rank::Five,
-            Rank::Six,
-            Rank::Seven,
-            Rank::Eight,
-            Rank::Nine,
-            Rank::Ten,
-            Rank::Jack,
-            Rank::Queen,
-            Rank::King,
-            Rank::Ace,
-        ];
-
-        ranks
+        Rank::STANDARD
             .iter()
-            .flat_map(|&rank| suits.iter().map(move |&suit| Card::new(suit, rank)))
+            .flat_map(|&rank| Suit::ALL.iter().map(move |&suit| Card::new(suit, rank)))
             .collect()
     }
 }
