@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 /// Represents the color of a card. Useful for games that utilize card colors (e.g., Euchre)
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
@@ -6,6 +7,7 @@ pub enum Color {
     Red,
     Black,
 }
+
 /// Represents the suit of a card.
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
 pub enum Suit {
@@ -21,6 +23,18 @@ impl Suit {
             Suit::Hearts | Suit::Diamonds => Color::Red,
             Suit::Clubs | Suit::Spades => Color::Black,
         }
+    }
+}
+
+impl fmt::Display for Suit {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let symbol = match self {
+            Suit::Hearts => "♥",
+            Suit::Diamonds => "♦",
+            Suit::Clubs => "♣",
+            Suit::Spades => "♠",
+        };
+        write!(f, "{}", symbol)
     }
 }
 
