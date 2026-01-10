@@ -227,6 +227,9 @@ impl Deck {
             if i == 0 {
                 continue; // Skip header
             }
+            if line.trim().is_empty() {
+                continue; // Skip empty lines
+            }
             match Card::from_csv_row(line) {
                 Ok(card) => cards.push_back(card),
                 Err(e) => return Err(format!("Failed to parse line {}: {}", i + 1, e)),
