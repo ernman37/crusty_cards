@@ -3,14 +3,14 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 
 /// Represents the color of a card. Useful for games that utilize card colors (e.g., Euchre)
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize, Deserialize)]
 pub enum Color {
     Red,
     Black,
 }
 
 /// Represents the suit of a card.
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize, Deserialize)]
 pub enum Suit {
     Hearts,
     Diamonds,
@@ -48,7 +48,7 @@ impl fmt::Display for Suit {
 }
 
 /// Represents the rank of a card. Useful for games that utilize card ranks (e.g., Poker)
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize, Deserialize)]
 pub enum Rank {
     Two,
     Three,
@@ -128,7 +128,7 @@ impl fmt::Display for Rank {
 }
 
 /// Represents a playing card with a suit and rank.
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize, Deserialize)]
 pub struct Card {
     suit: Suit,
     rank: Rank,
@@ -608,5 +608,136 @@ mod tests {
             let j = usize::from(card);
             assert_eq!(i, j);
         }
+    }
+
+    // === Hash trait tests ===
+
+    #[test]
+    fn test_card_hash_in_hashset() {
+        use std::collections::HashSet;
+
+        let mut set: HashSet<Card> = HashSet::new();
+        let ace_of_spades = Card::new(Suit::Spades, Rank::Ace);
+        let king_of_hearts = Card::new(Suit::Hearts, Rank::King);
+
+        // Insert cards
+        assert!(set.insert(ace_of_spades));
+        assert!(set.insert(king_of_hearts));
+
+        // Duplicate insert should return false
+        assert!(!set.insert(ace_of_spades));
+
+        // Check contains
+        assert!(set.contains(&ace_of_spades));
+        assert!(set.contains(&king_of_hearts));
+        assert!(!set.contains(&Card::new(Suit::Clubs, Rank::Two)));
+
+        assert_eq!(set.len(), 2);
+    }
+
+    #[test]
+    fn test_card_hash_in_hashmap() {
+        use std::collections::HashMap;
+
+        let mut map: HashMap<Card, u32> = HashMap::new();
+        let ace_of_spades = Card::new(Suit::Spades, Rank::Ace);
+        let king_of_hearts = Card::new(Suit::Hearts, Rank::King);
+
+        map.insert(ace_of_spades, 10);
+        map.insert(king_of_hearts, 5);
+
+        assert_eq!(map.get(&ace_of_spades), Some(&10));
+        assert_eq!(map.get(&king_of_hearts), Some(&5));
+        assert_eq!(map.get(&Card::new(Suit::Clubs, Rank::Two)), None);
+
+        // Update value
+        map.insert(ace_of_spades, 20);
+        assert_eq!(map.get(&ace_of_spades), Some(&20));
+        assert_eq!(map.len(), 2);
+    }
+
+    #[test]
+    fn test_suit_hash_in_hashset() {
+        use std::collections::HashSet;
+
+        let mut set: HashSet<Suit> = HashSet::new();
+        for suit in Suit::ALL {
+            assert!(set.insert(suit));
+        }
+        assert_eq!(set.len(), 4);
+
+        // Duplicates should not increase size
+        for suit in Suit::ALL {
+            assert!(!set.insert(suit));
+        }
+        assert_eq!(set.len(), 4);
+    }
+
+    #[test]
+    fn test_rank_hash_in_hashset() {
+        use std::collections::HashSet;
+
+        let mut set: HashSet<Rank> = HashSet::new();
+        for rank in Rank::ALL {
+            assert!(set.insert(rank));
+        }
+        assert_eq!(set.len(), 14);
+
+        // Duplicates should not increase size
+        for rank in Rank::ALL {
+            assert!(!set.insert(rank));
+        }
+        assert_eq!(set.len(), 14);
+    }
+
+    #[test]
+    fn test_color_hash_in_hashset() {
+        use std::collections::HashSet;
+
+        let mut set: HashSet<Color> = HashSet::new();
+        assert!(set.insert(Color::Red));
+        assert!(set.insert(Color::Black));
+        assert_eq!(set.len(), 2);
+
+        // Duplicates
+        assert!(!set.insert(Color::Red));
+        assert!(!set.insert(Color::Black));
+        assert_eq!(set.len(), 2);
+    }
+
+    #[test]
+    fn test_card_hash_consistency() {
+        use std::collections::hash_map::DefaultHasher;
+        use std::hash::{Hash, Hasher};
+
+        let card1 = Card::new(Suit::Hearts, Rank::Ace);
+        let card2 = Card::new(Suit::Hearts, Rank::Ace);
+
+        let mut hasher1 = DefaultHasher::new();
+        let mut hasher2 = DefaultHasher::new();
+
+        card1.hash(&mut hasher1);
+        card2.hash(&mut hasher2);
+
+        // Equal cards should produce equal hashes
+        assert_eq!(hasher1.finish(), hasher2.finish());
+    }
+
+    #[test]
+    fn test_different_cards_different_hashes() {
+        use std::collections::hash_map::DefaultHasher;
+        use std::hash::{Hash, Hasher};
+
+        let card1 = Card::new(Suit::Hearts, Rank::Ace);
+        let card2 = Card::new(Suit::Spades, Rank::King);
+
+        let mut hasher1 = DefaultHasher::new();
+        let mut hasher2 = DefaultHasher::new();
+
+        card1.hash(&mut hasher1);
+        card2.hash(&mut hasher2);
+
+        // Different cards should (almost certainly) produce different hashes
+        assert_ne!(hasher1.finish(), hasher2.finish());
     }
 }
