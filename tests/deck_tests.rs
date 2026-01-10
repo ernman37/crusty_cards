@@ -2,6 +2,7 @@ use crusty_cards::{
     AceLowComparator, Card, Deck, Rank, StandardComparator, Suit, TrumpComparator,
 };
 use std::collections::VecDeque;
+use std::str::FromStr;
 
 #[test]
 fn test_deck_creation() {
@@ -51,7 +52,7 @@ fn test_deck_display() {
     let display = format!("{}", deck);
     let card1 = Card::new(Suit::Hearts, Rank::Ace);
     let card2 = Card::new(Suit::Spades, Rank::King);
-    assert_eq!(display, format!("{} {} ", card1, card2));
+    assert_eq!(display, format!("{} {}", card1, card2));
 }
 
 #[test]
@@ -494,5 +495,41 @@ fn test_deck_into_iter_mut() {
         if card.rank() == Rank::Ace {
             *card = Card::new(Suit::Hearts, Rank::Two);
         }
+    }
+}
+
+#[test]
+fn test_deck_from_str_delimiter() {
+    let deck_str = "2d,3hearts,4s,5c,aCeSpades";
+    let mut deck = Deck::from_str_delimiter(deck_str, ',').unwrap();
+
+    assert_eq!(deck.len(), 5);
+    assert_eq!(deck.deal().unwrap(), Card::new(Suit::Diamonds, Rank::Two));
+    assert_eq!(deck.deal().unwrap(), Card::new(Suit::Hearts, Rank::Three));
+    assert_eq!(deck.deal().unwrap(), Card::new(Suit::Spades, Rank::Four));
+    assert_eq!(deck.deal().unwrap(), Card::new(Suit::Clubs, Rank::Five));
+    assert_eq!(deck.deal().unwrap(), Card::new(Suit::Spades, Rank::Ace));
+
+    let deck_str_invalid = "2d,invalid_card,4s";
+    let result = Deck::from_str_delimiter(deck_str_invalid, ',');
+    assert!(result.is_err());
+}
+
+#[test]
+fn test_to_and_from_str() {
+    let mut deck = Deck::new(VecDeque::from(vec![
+        Card::new(Suit::Diamonds, Rank::Two),
+        Card::new(Suit::Hearts, Rank::Three),
+        Card::new(Suit::Spades, Rank::Four),
+        Card::new(Suit::Clubs, Rank::Five),
+        Card::new(Suit::Spades, Rank::Ace),
+    ]));
+
+    let deck_str = format!("{}", deck);
+    let mut new_deck = Deck::from_str(&deck_str).unwrap();
+
+    assert_eq!(deck.len(), new_deck.len());
+    while let (Some(card1), Some(card2)) = (deck.deal(), new_deck.deal()) {
+        assert_eq!(card1, card2);
     }
 }

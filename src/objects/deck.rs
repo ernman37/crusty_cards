@@ -3,6 +3,7 @@ use rand::seq::SliceRandom;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 use std::ops::{Sub, SubAssign, Add, AddAssign, Mul, MulAssign};
+use std::str::FromStr;
 use std::{fmt};
 use std::convert::{From, TryFrom};
 
@@ -18,10 +19,7 @@ pub struct Deck {
 
 impl fmt::Display for Deck {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        for card in &self.cards {
-            write!(f, "{} ", card)?;
-        }
-        Ok(())
+        write!(f, "{}", self.as_string_delimiter(' '))
     }
 }
 
@@ -120,6 +118,31 @@ impl Deck {
     /// Clears the deck of all cards.
     pub fn clear(&mut self) {
         self.cards.clear();
+    }
+
+    /// Returns a string representation of the deck with the specified delimiter.
+    pub fn as_string_delimiter(&self, delimiter: char) -> String {
+        self.cards
+            .iter()
+            .map(|card| format!("{}", card))
+            .collect::<Vec<String>>()
+            .join(&delimiter.to_string())
+    }
+
+    /// Creates a Deck from a string representation of cards separated by a delimiter.
+    pub fn from_str_delimiter(s: &str, delimiter: char) -> Result<Self, String> {
+        let mut cards = VecDeque::new();
+        for part in s.split(delimiter) {
+            let part = part.trim();
+            if part.is_empty() {
+                continue;
+            }
+            match Card::from_str(part) {
+                Ok(card) => cards.push_back(card),
+                Err(e) => return Err(format!("Failed to parse card '{}': {}", part, e)),
+            }
+        }
+        Ok(Deck::new(cards))
     }
 
     /// Sorts the deck using a custom comparator.
@@ -319,5 +342,14 @@ impl<'a> IntoIterator for &'a mut Deck {
 
     fn into_iter(self) -> Self::IntoIter {
         self.iter_mut()
+    }
+}
+
+impl FromStr for Deck {
+    type Err = String;
+
+    /// Creates a Deck from a string representation of cards separated by spaces.
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Deck::from_str_delimiter(s, ' ')
     }
 }
