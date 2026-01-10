@@ -145,6 +145,31 @@ impl Deck {
         Ok(Deck::new(cards))
     }
 
+    /// Serializes the deck to a JSON string.
+    pub fn to_json(&self) -> Result<String, serde_json::Error> {
+        serde_json::to_string(self)
+    }
+
+    /// Serializes the deck to a pretty-printed JSON string.
+    pub fn to_json_pretty(&self) -> Result<String, serde_json::Error> {
+        serde_json::to_string_pretty(self)
+    }
+
+    /// Creates a Deck from a JSON string.
+    pub fn from_json(s: &str) -> Result<Self, serde_json::Error> {
+        serde_json::from_str(s)
+    }
+
+    /// Serializes the deck to a YAML string.
+    pub fn to_yaml(&self) -> Result<String, serde_yaml::Error> {
+        serde_yaml::to_string(self)
+    }
+
+    /// Creates a Deck from a YAML string.
+    pub fn from_yaml(s: &str) -> Result<Self, serde_yaml::Error> {
+        serde_yaml::from_str(s)
+    }
+
     /// Sorts the deck using a custom comparator.
     ///
     /// # Example

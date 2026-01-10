@@ -533,3 +533,112 @@ fn test_to_and_from_str() {
         assert_eq!(card1, card2);
     }
 }
+
+#[test]
+fn test_deck_to_and_from_json() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+        Card::new(Suit::Diamonds, Rank::Queen),
+    ]);
+    let deck = Deck::new(cards);
+
+    // Convert to JSON and back
+    let json = deck.to_json().unwrap();
+    let restored = Deck::from_json(&json).unwrap();
+
+    assert_eq!(deck.len(), restored.len());
+
+    // Verify cards match
+    for (original, restored) in deck.iter().zip(restored.iter()) {
+        assert_eq!(original, restored);
+    }
+}
+
+#[test]
+fn test_deck_to_json_pretty() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+    ]);
+    let deck = Deck::new(cards);
+
+    let json_pretty = deck.to_json_pretty().unwrap();
+
+    // Pretty JSON should contain newlines
+    assert!(json_pretty.contains('\n'));
+
+    // Should still be valid JSON
+    let restored = Deck::from_json(&json_pretty).unwrap();
+    assert_eq!(deck.len(), restored.len());
+}
+
+#[test]
+fn test_deck_to_and_from_yaml() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+        Card::new(Suit::Diamonds, Rank::Queen),
+    ]);
+    let deck = Deck::new(cards);
+
+    // Convert to YAML and back
+    let yaml = deck.to_yaml().unwrap();
+    let restored = Deck::from_yaml(&yaml).unwrap();
+
+    assert_eq!(deck.len(), restored.len());
+
+    // Verify cards match
+    for (original, restored) in deck.iter().zip(restored.iter()) {
+        assert_eq!(original, restored);
+    }
+}
+
+#[test]
+fn test_deck_json_format() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+    ]);
+    let deck = Deck::new(cards);
+
+    let json = deck.to_json().unwrap();
+
+    // Verify it's valid JSON structure
+    assert!(json.contains("cards"));
+    assert!(json.contains("suit"));
+    assert!(json.contains("rank"));
+}
+
+#[test]
+fn test_deck_yaml_format() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+    ]);
+    let deck = Deck::new(cards);
+
+    let yaml = deck.to_yaml().unwrap();
+
+    // YAML should contain readable structure
+    assert!(yaml.contains("cards"));
+    assert!(yaml.contains("suit"));
+    assert!(yaml.contains("rank"));
+}
+
+#[test]
+fn test_deck_empty_json_roundtrip() {
+    let deck = Deck::new(VecDeque::new());
+
+    let json = deck.to_json().unwrap();
+    let restored = Deck::from_json(&json).unwrap();
+
+    assert!(restored.is_empty());
+}
+
+#[test]
+fn test_deck_empty_yaml_roundtrip() {
+    let deck = Deck::new(VecDeque::new());
+
+    let yaml = deck.to_yaml().unwrap();
+    let restored = Deck::from_yaml(&yaml).unwrap();
+
+    assert!(restored.is_empty());
+}
