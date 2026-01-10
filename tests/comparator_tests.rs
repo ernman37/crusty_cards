@@ -20,13 +20,20 @@ fn test_standard_comparator() {
 #[test]
 fn test_standard_comparator_rank_values() {
     let cmp = StandardComparator;
-    assert_eq!(cmp.rank_value(Rank::Two), 2);
-    assert_eq!(cmp.rank_value(Rank::Ten), 10);
-    assert_eq!(cmp.rank_value(Rank::Jack), 11);
-    assert_eq!(cmp.rank_value(Rank::Queen), 12);
-    assert_eq!(cmp.rank_value(Rank::King), 13);
-    assert_eq!(cmp.rank_value(Rank::Ace), 14);
-    assert_eq!(cmp.rank_value(Rank::Joker), 15);
+    assert_eq!(cmp.rank_value(Rank::Two), 0);
+    assert_eq!(cmp.rank_value(Rank::Three), 1);
+    assert_eq!(cmp.rank_value(Rank::Four), 2);
+    assert_eq!(cmp.rank_value(Rank::Five), 3);
+    assert_eq!(cmp.rank_value(Rank::Six), 4);
+    assert_eq!(cmp.rank_value(Rank::Seven), 5);
+    assert_eq!(cmp.rank_value(Rank::Eight), 6);
+    assert_eq!(cmp.rank_value(Rank::Nine), 7);
+    assert_eq!(cmp.rank_value(Rank::Ten), 8);
+    assert_eq!(cmp.rank_value(Rank::Jack), 9);
+    assert_eq!(cmp.rank_value(Rank::Queen), 10);
+    assert_eq!(cmp.rank_value(Rank::King), 11);
+    assert_eq!(cmp.rank_value(Rank::Ace), 12);
+    assert_eq!(cmp.rank_value(Rank::Joker), 13);
 }
 
 #[test]

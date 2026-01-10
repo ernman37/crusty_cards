@@ -21,20 +21,20 @@ fn test_rank_symbol() {
 
 #[test]
 fn test_rank_value() {
-    assert_eq!(Rank::Two.value(), 2);
-    assert_eq!(Rank::Three.value(), 3);
-    assert_eq!(Rank::Four.value(), 4);
-    assert_eq!(Rank::Five.value(), 5);
-    assert_eq!(Rank::Six.value(), 6);
-    assert_eq!(Rank::Seven.value(), 7);
-    assert_eq!(Rank::Eight.value(), 8);
-    assert_eq!(Rank::Nine.value(), 9);
-    assert_eq!(Rank::Ten.value(), 10);
-    assert_eq!(Rank::Jack.value(), 11);
-    assert_eq!(Rank::Queen.value(), 12);
-    assert_eq!(Rank::King.value(), 13);
-    assert_eq!(Rank::Ace.value(), 14);
-    assert_eq!(Rank::Joker.value(), 15);
+    assert_eq!(Rank::Two.value(), 0);
+    assert_eq!(Rank::Three.value(), 1);
+    assert_eq!(Rank::Four.value(), 2);
+    assert_eq!(Rank::Five.value(), 3);
+    assert_eq!(Rank::Six.value(), 4);
+    assert_eq!(Rank::Seven.value(), 5);
+    assert_eq!(Rank::Eight.value(), 6);
+    assert_eq!(Rank::Nine.value(), 7);
+    assert_eq!(Rank::Ten.value(), 8);
+    assert_eq!(Rank::Jack.value(), 9);
+    assert_eq!(Rank::Queen.value(), 10);
+    assert_eq!(Rank::King.value(), 11);
+    assert_eq!(Rank::Ace.value(), 12);
+    assert_eq!(Rank::Joker.value(), 13);
 }
 
 #[test]

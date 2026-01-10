@@ -114,22 +114,7 @@ impl From<Card> for usize {
     fn from(card: Card) -> Self {
         let suit_value = card.suit.value() as usize;
 
-        let rank_value = match card.rank {
-            Rank::Two => 0,
-            Rank::Three => 1,
-            Rank::Four => 2,
-            Rank::Five => 3,
-            Rank::Six => 4,
-            Rank::Seven => 5,
-            Rank::Eight => 6,
-            Rank::Nine => 7,
-            Rank::Ten => 8,
-            Rank::Jack => 9,
-            Rank::Queen => 10,
-            Rank::King => 11,
-            Rank::Ace => 12,
-            Rank::Joker => 13,
-        };
+        let rank_value = card.rank.value() as usize;
 
         suit_value * 14 + rank_value
     }
