@@ -329,7 +329,7 @@ fn test_deck_mul_assign() {
 
 #[test]
 fn test_deck_try_from_vec_usize() {
-    let values = vec![0, 12, 25]; // Two of Hearts, Ace of Hearts, Ace of Diamonds
+    let values = vec![0, 12, 25];
     let deck = Deck::try_from(values).unwrap();
     assert_eq!(deck.len(), 3);
 }
