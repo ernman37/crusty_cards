@@ -670,3 +670,37 @@ fn test_deck_to_and_from_csv() {
         assert_eq!(original, restored);
     }
 }
+
+#[test]
+fn test_deck_equality() {
+    let cards1 = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+    ]);
+    let deck1 = Deck::new(cards1);
+
+    let cards2 = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+    ]);
+    let deck2 = Deck::new(cards2);
+
+    assert_eq!(deck1, deck2);
+}
+
+#[test]
+fn test_deck_inequality() {
+    let cards1 = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+    ]);
+    let deck1 = Deck::new(cards1);
+
+    let cards2 = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::Queen),
+    ]);
+    let deck2 = Deck::new(cards2);
+
+    assert_ne!(deck1, deck2);
+}

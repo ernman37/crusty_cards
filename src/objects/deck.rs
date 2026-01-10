@@ -12,7 +12,7 @@ use crate::CardComparator;
 use crate::DeckFactory;
 
 /// A struct representing a deck of playing cards.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq, Hash)]
 pub struct Deck {
     cards: VecDeque<Card>,
 }
