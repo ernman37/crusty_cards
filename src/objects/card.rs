@@ -111,49 +111,49 @@ impl From<Card> for i8 {
 
 impl From<Card> for u16 {
     fn from(card: Card) -> Self {
-        Self::from(u8::from(card)) as u16
+        Self::from(u8::from(card))
     }
 }
 
 impl From<Card> for i16 {
     fn from(card: Card) -> Self {
-        Self::from(u8::from(card)) as i16
+        Self::from(u8::from(card))
     }
 }
 
 impl From<Card> for u32 {
     fn from(card: Card) -> Self {
-        Self::from(u8::from(card)) as u32
+        Self::from(u8::from(card))
     }
 }
 
 impl From<Card> for i32 {
     fn from(card: Card) -> Self {
-        Self::from(u8::from(card)) as i32
+        Self::from(u8::from(card))
     }
 }
 
 impl From<Card> for u64 {
     fn from(card: Card) -> Self {
-        Self::from(u8::from(card)) as u64
+        Self::from(u8::from(card))
     }
 }
 
 impl From<Card> for i64 {
     fn from(card: Card) -> Self {
-        Self::from(u8::from(card)) as i64
+        Self::from(u8::from(card))
     }
 }
 
 impl From<Card> for usize {
     fn from(card: Card) -> Self {
-        Self::from(u8::from(card)) as usize
+        Self::from(u8::from(card))
     }
 }
 
 impl From<Card> for isize {
     fn from(card: Card) -> Self {
-        Self::from(u8::from(card)) as isize
+        Self::from(u8::from(card))
     }
 }
 
