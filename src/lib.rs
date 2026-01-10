@@ -8,6 +8,11 @@ pub use objects::deck::Deck;
 
 pub mod traits;
 
+pub use traits::comparator::AceLowComparator;
+pub use traits::comparator::BridgeComparator;
+pub use traits::comparator::CardComparator;
+pub use traits::comparator::StandardComparator;
+pub use traits::comparator::TrumpComparator;
 pub use traits::factory::DeckFactory;
 
 pub mod utils;

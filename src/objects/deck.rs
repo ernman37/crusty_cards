@@ -7,6 +7,7 @@ use std::fmt;
 use std::convert::{From, TryFrom};
 
 use crate::Card;
+use crate::CardComparator;
 use crate::DeckFactory;
 
 /// A struct representing a deck of playing cards.
@@ -109,6 +110,48 @@ impl Deck {
     /// Clears the deck of all cards.
     pub fn clear(&mut self) {
         self.cards.clear();
+    }
+
+    /// Sorts the deck using a custom comparator.
+    ///
+    /// # Example
+    /// ```
+    /// use crusty_cards::{Deck, Standard52, StandardComparator, AceLowComparator};
+    ///
+    /// let mut deck = Deck::from_factory(Standard52);
+    /// deck.shuffle();
+    ///
+    /// // Sort with Ace high (standard)
+    /// deck.sort_by_comparator(&StandardComparator);
+    ///
+    /// // Or sort with Ace low
+    /// deck.sort_by_comparator(&AceLowComparator);
+    /// ```
+    pub fn sort_by_comparator<C: CardComparator>(&mut self, comparator: &C) {
+        let mut cards_vec: Vec<Card> = self.cards.drain(..).collect();
+        cards_vec.sort_by(|a, b| comparator.compare(a, b));
+        self.cards = VecDeque::from(cards_vec);
+    }
+
+    /// Sorts the deck using a custom comparison function.
+    ///
+    /// # Example
+    /// ```
+    /// use crusty_cards::{Deck, Standard52};
+    ///
+    /// let mut deck = Deck::from_factory(Standard52);
+    /// deck.shuffle();
+    ///
+    /// // Sort by rank value descending
+    /// deck.sort_by(|a, b| b.rank().value().cmp(&a.rank().value()));
+    /// ```
+    pub fn sort_by<F>(&mut self, compare: F)
+    where
+        F: FnMut(&Card, &Card) -> std::cmp::Ordering,
+    {
+        let mut cards_vec: Vec<Card> = self.cards.drain(..).collect();
+        cards_vec.sort_by(compare);
+        self.cards = VecDeque::from(cards_vec);
     }
 }
 
@@ -595,5 +638,101 @@ mod tests {
         let values: Vec<usize> = Vec::from(deck);
         assert_eq!(values, vec![12, 53]);
 
+    }
+
+    // === Sorting tests ===
+
+    #[test]
+    fn test_deck_sort_by_comparator() {
+        use crate::StandardComparator;
+
+        let cards = VecDeque::from(vec![
+            Card::new(Suit::Hearts, Rank::King),
+            Card::new(Suit::Spades, Rank::Two),
+            Card::new(Suit::Clubs, Rank::Ace),
+            Card::new(Suit::Diamonds, Rank::Seven),
+        ]);
+        let mut deck = Deck::new(cards);
+
+        deck.sort_by_comparator(&StandardComparator);
+
+        // Should be sorted by rank: 2, 7, K, A
+        assert_eq!(deck.deal().unwrap().rank(), Rank::Two);
+        assert_eq!(deck.deal().unwrap().rank(), Rank::Seven);
+        assert_eq!(deck.deal().unwrap().rank(), Rank::King);
+        assert_eq!(deck.deal().unwrap().rank(), Rank::Ace);
+    }
+
+    #[test]
+    fn test_deck_sort_by_ace_low_comparator() {
+        use crate::AceLowComparator;
+
+        let cards = VecDeque::from(vec![
+            Card::new(Suit::Hearts, Rank::King),
+            Card::new(Suit::Spades, Rank::Two),
+            Card::new(Suit::Clubs, Rank::Ace),
+            Card::new(Suit::Diamonds, Rank::Seven),
+        ]);
+        let mut deck = Deck::new(cards);
+
+        deck.sort_by_comparator(&AceLowComparator);
+
+        // Should be sorted with Ace low: A, 2, 7, K
+        assert_eq!(deck.deal().unwrap().rank(), Rank::Ace);
+        assert_eq!(deck.deal().unwrap().rank(), Rank::Two);
+        assert_eq!(deck.deal().unwrap().rank(), Rank::Seven);
+        assert_eq!(deck.deal().unwrap().rank(), Rank::King);
+    }
+
+    #[test]
+    fn test_deck_sort_by_custom_function() {
+        let cards = VecDeque::from(vec![
+            Card::new(Suit::Hearts, Rank::King),
+            Card::new(Suit::Spades, Rank::Two),
+            Card::new(Suit::Clubs, Rank::Ace),
+        ]);
+        let mut deck = Deck::new(cards);
+
+        // Sort descending by rank value
+        deck.sort_by(|a, b| b.rank().value().cmp(&a.rank().value()));
+
+        // Should be sorted descending: A, K, 2
+        assert_eq!(deck.deal().unwrap().rank(), Rank::Ace);
+        assert_eq!(deck.deal().unwrap().rank(), Rank::King);
+        assert_eq!(deck.deal().unwrap().rank(), Rank::Two);
+    }
+
+    #[test]
+    fn test_deck_sort_by_trump_comparator() {
+        use crate::TrumpComparator;
+
+        let cards = VecDeque::from(vec![
+            Card::new(Suit::Spades, Rank::Ace),     // Non-trump Ace
+            Card::new(Suit::Hearts, Rank::Two),    // Trump Two (hearts is trump)
+            Card::new(Suit::Clubs, Rank::King),    // Non-trump King
+            Card::new(Suit::Hearts, Rank::Seven),  // Trump Seven
+        ]);
+        let mut deck = Deck::new(cards);
+
+        deck.sort_by_comparator(&TrumpComparator::new(Suit::Hearts));
+
+        // Non-trump cards first (by rank), then trump cards (by rank)
+        // King < Ace (non-trump), then Two < Seven (trump)
+        let card1 = deck.deal().unwrap();
+        let card2 = deck.deal().unwrap();
+        let card3 = deck.deal().unwrap();
+        let card4 = deck.deal().unwrap();
+
+        // Non-trump: King, Ace
+        assert_eq!(card1.suit(), Suit::Clubs);
+        assert_eq!(card1.rank(), Rank::King);
+        assert_eq!(card2.suit(), Suit::Spades);
+        assert_eq!(card2.rank(), Rank::Ace);
+
+        // Trump: Two, Seven
+        assert_eq!(card3.suit(), Suit::Hearts);
+        assert_eq!(card3.rank(), Rank::Two);
+        assert_eq!(card4.suit(), Suit::Hearts);
+        assert_eq!(card4.rank(), Rank::Seven);
     }
 }
