@@ -112,12 +112,7 @@ impl TryFrom<usize> for Card {
 
 impl From<Card> for usize {
     fn from(card: Card) -> Self {
-        let suit_value = match card.suit {
-            Suit::Hearts => 0,
-            Suit::Diamonds => 1,
-            Suit::Clubs => 2,
-            Suit::Spades => 3,
-        };
+        let suit_value = card.suit.value() as usize;
 
         let rank_value = match card.rank {
             Rank::Two => 0,
