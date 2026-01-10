@@ -92,3 +92,29 @@ fn test_suit_value(){
     assert_eq!(Suit::Clubs.value(), 2);
     assert_eq!(Suit::Spades.value(), 3);
 }
+
+#[test]
+fn test_suit_from_str() {
+    assert_eq!("hearts".parse::<Suit>().unwrap(), Suit::Hearts);
+    assert_eq!("H".parse::<Suit>().unwrap(), Suit::Hearts);
+    assert_eq!("♥".parse::<Suit>().unwrap(), Suit::Hearts);
+
+    assert_eq!("diamonds".parse::<Suit>().unwrap(), Suit::Diamonds);
+    assert_eq!("D".parse::<Suit>().unwrap(), Suit::Diamonds);
+    assert_eq!("♦".parse::<Suit>().unwrap(), Suit::Diamonds);
+
+    assert_eq!("clubs".parse::<Suit>().unwrap(), Suit::Clubs);
+    assert_eq!("C".parse::<Suit>().unwrap(), Suit::Clubs);
+    assert_eq!("♣".parse::<Suit>().unwrap(), Suit::Clubs);
+
+    assert_eq!("spades".parse::<Suit>().unwrap(), Suit::Spades);
+    assert_eq!("S".parse::<Suit>().unwrap(), Suit::Spades);
+    assert_eq!("♠".parse::<Suit>().unwrap(), Suit::Spades);
+
+    // Case insensitive
+    assert_eq!("hEaRtS".parse::<Suit>().unwrap(), Suit::Hearts);
+
+    // Invalid inputs
+    assert!("x".parse::<Suit>().is_err());
+    assert!("".parse::<Suit>().is_err());
+}
