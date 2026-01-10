@@ -3,7 +3,7 @@ use rand::seq::SliceRandom;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 use std::ops::{Sub, SubAssign, Add, AddAssign, Mul, MulAssign};
-use std::fmt;
+use std::{fmt};
 use std::convert::{From, TryFrom};
 
 use crate::Card;
@@ -39,6 +39,16 @@ impl Deck {
         Self {
             cards: factory.generate(),
         }
+    }
+
+    /// Returns an iterator over the cards in the deck.
+    pub fn iter<'a>(&'a self) -> std::collections::vec_deque::Iter<'a, Card> {
+        self.cards.iter()
+    }
+
+    /// Returns a mutable iterator over the cards in the deck.
+    pub fn iter_mut<'a>(&'a mut self) -> std::collections::vec_deque::IterMut<'a, Card> {
+        self.cards.iter_mut()
     }
 
     /// Cuts the deck at the given index.
@@ -282,5 +292,32 @@ impl From<Deck> for Vec<usize> {
     /// Converts a Deck into a vector of usize indices.
     fn from(deck: Deck) -> Self {
         deck.cards.iter().map(|card| usize::from(*card)).collect()
+    }
+}
+
+impl IntoIterator for Deck {
+    type Item = Card;
+    type IntoIter = std::collections::vec_deque::IntoIter<Card>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.cards.into_iter()
+    }
+}
+
+impl<'a> IntoIterator for &'a Deck {
+    type Item = &'a Card;
+    type IntoIter = std::collections::vec_deque::Iter<'a, Card>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter()
+    }
+}
+
+impl<'a> IntoIterator for &'a mut Deck {
+    type Item = &'a mut Card;
+    type IntoIter = std::collections::vec_deque::IterMut<'a, Card>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter_mut()
     }
 }
