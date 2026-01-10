@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 use std::ops::{Sub, SubAssign, Add, AddAssign, Mul, MulAssign};
 use std::fmt;
+use std::convert::{From, TryFrom};
 
 use crate::Card;
 use crate::DeckFactory;
@@ -155,7 +156,7 @@ impl Mul<usize> for Deck {
         let mut new_deck = Deck::new(VecDeque::new());
         for _ in 0..rhs {
             for card in &self.cards {
-                new_deck.add_card(card.clone());
+                new_deck.add_card(*card);
             }
         }
         new_deck
@@ -169,7 +170,7 @@ impl MulAssign<usize> for Deck {
         self.clear();
         for _ in 0..rhs {
             for card in &original_deck.cards {
-                self.add_card(card.clone());
+                self.add_card(*card);
             }
         }
     }
@@ -204,7 +205,7 @@ impl Sub<Deck> for Deck {
     fn sub(self, rhs: Deck) -> Deck {
         let mut new_deck = self.clone();
         for card in rhs.cards {
-            new_deck = new_deck - card;
+            new_deck = new_deck.clone() - card;
         }
         new_deck
     }
@@ -214,6 +215,30 @@ impl SubAssign<Deck> for Deck {
     /// Removes cards from rhs Deck from self Deck in place.
     fn sub_assign(&mut self, rhs: Deck) {
         *self = self.clone() - rhs;
+    }
+}
+
+impl TryFrom<Vec<usize>> for Deck {
+    type Error = String;
+
+    /// Tries to create a Deck from a vector of usize indices.
+    fn try_from(values: Vec<usize>) -> Result<Self, Self::Error> {
+        let mut cards = VecDeque::new();
+        for value in values {
+            if let Ok(card) = Card::try_from(value) {
+                cards.push_back(card);
+            } else {
+                return Err(format!("Invalid card value: {}", value));
+            }
+        }
+        Ok(Deck::new(cards))
+    }
+}
+
+impl From<Deck> for Vec<usize> {
+    /// Converts a Deck into a vector of usize indices.
+    fn from(deck: Deck) -> Self {
+        deck.cards.iter().map(|card| usize::from(*card)).collect()
     }
 }
 
@@ -551,5 +576,24 @@ mod tests {
         let mut deck = Deck::new(cards);
         deck *= 3;
         assert_eq!(deck.len(), 6);
+    }
+
+    #[test]
+    fn test_deck_try_from_vec_usize() {
+        let values = vec![0, 12, 25]; // Ace of Hearts, King of Hearts, King of Diamonds
+        let deck = Deck::try_from(values).unwrap();
+        assert_eq!(deck.len(), 3);
+    }
+
+    #[test]
+    fn test_deck_from_deck_to_vec_usize() {
+        let cards = VecDeque::from(vec![
+            Card::new(Suit::Hearts, Rank::Ace),
+            Card::new(Suit::Spades, Rank::King),
+        ]);
+        let deck = Deck::new(cards);
+        let values: Vec<usize> = Vec::from(deck);
+        assert_eq!(values, vec![12, 53]);
+
     }
 }
