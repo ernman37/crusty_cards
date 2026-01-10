@@ -1,6 +1,7 @@
 use crusty_cards::{Card, Rank, Suit};
 use std::collections::{HashMap, HashSet};
 use std::hash::{DefaultHasher, Hash, Hasher};
+use std::str::FromStr;
 
 #[test]
 fn test_card_new() {
@@ -145,18 +146,111 @@ fn test_card_serialization() {
 }
 
 #[test]
-fn test_card_try_from_usize() {
-    let card = Card::try_from(0).unwrap();
+fn test_card_try_from_u8() {
+    let card = Card::try_from(0u8).unwrap();
     assert_eq!(card, Card::new(Suit::Hearts, Rank::Two));
+}
 
-    let card = Card::try_from(13).unwrap();
-    assert_eq!(card, Card::new(Suit::Hearts, Rank::Joker));
+#[test]
+fn test_card_try_from_i8() {
+    let card = Card::try_from(0i8).unwrap();
+    assert_eq!(card, Card::new(Suit::Hearts, Rank::Two));
+}
 
-    let card = Card::try_from(14).unwrap();
-    assert_eq!(card, Card::new(Suit::Diamonds, Rank::Two));
+#[test]
+fn test_card_try_from_u16() {
+    let card = Card::try_from(0u16).unwrap();
+    assert_eq!(card, Card::new(Suit::Hearts, Rank::Two));
+}
 
-    let card = Card::try_from(55).unwrap();
-    assert_eq!(card, Card::new(Suit::Spades, Rank::Joker));
+#[test]
+fn test_card_try_from_i16() {
+    let card = Card::try_from(0i16).unwrap();
+    assert_eq!(card, Card::new(Suit::Hearts, Rank::Two));
+}
+
+#[test]
+fn test_card_try_from_u32() {
+    let card = Card::try_from(0u32).unwrap();
+    assert_eq!(card, Card::new(Suit::Hearts, Rank::Two));
+}
+
+#[test]
+fn test_card_try_from_i32() {
+    let card = Card::try_from(0i32).unwrap();
+    assert_eq!(card, Card::new(Suit::Hearts, Rank::Two));
+}
+
+#[test]
+fn test_card_try_from_u64() {
+    let card = Card::try_from(0u64).unwrap();
+    assert_eq!(card, Card::new(Suit::Hearts, Rank::Two));
+}
+
+#[test]
+fn test_card_try_from_i64() {
+    let card = Card::try_from(0i64).unwrap();
+    assert_eq!(card, Card::new(Suit::Hearts, Rank::Two));
+}
+
+#[test]
+fn test_card_try_from_usize() {
+    let card = Card::try_from(0usize).unwrap();
+    assert_eq!(card, Card::new(Suit::Hearts, Rank::Two));
+}
+
+#[test]
+fn test_card_try_from_isize() {
+    let card = Card::try_from(0isize).unwrap();
+    assert_eq!(card, Card::new(Suit::Hearts, Rank::Two));
+}
+
+#[test]
+fn test_card_try_from_u8_out_of_range() {
+    let result = Card::try_from(56u8);
+    assert!(result.is_err());
+}
+
+#[test]
+fn test_card_try_from_i8_out_of_range() {
+    let result = Card::try_from(56i8);
+    assert!(result.is_err());
+}
+
+#[test]
+fn test_card_try_from_u16_out_of_range() {
+    let result = Card::try_from(56u16);
+    assert!(result.is_err());
+}
+
+#[test]
+fn test_card_try_from_i16_out_of_range() {
+    let result = Card::try_from(56i16);
+    assert!(result.is_err());
+}
+
+#[test]
+fn test_card_try_from_u32_out_of_range() {
+    let result = Card::try_from(56u32);
+    assert!(result.is_err());
+}
+
+#[test]
+fn test_card_try_from_i32_out_of_range() {
+    let result = Card::try_from(56i32);
+    assert!(result.is_err());
+}
+
+#[test]
+fn test_card_try_from_u64_out_of_range() {
+    let result = Card::try_from(56u64);
+    assert!(result.is_err());
+}
+
+#[test]
+fn test_card_try_from_i64_out_of_range() {
+    let result = Card::try_from(56i64);
+    assert!(result.is_err());
 }
 
 #[test]
@@ -166,24 +260,159 @@ fn test_card_try_from_usize_out_of_range() {
 }
 
 #[test]
-fn test_usize_from_card() {
+fn test_card_try_from_isize_out_of_range() {
+    let result = Card::try_from(56isize);
+    assert!(result.is_err());
+}
+
+#[test]
+fn test_card_u8_conversion() {
+    let card = Card::new(Suit::Hearts, Rank::Two);
+    assert_eq!(u8::from(card), 0);
+
+    let card = Card::new(Suit::Hearts, Rank::Joker);
+    assert_eq!(u8::from(card), 13);
+
+    let card = Card::new(Suit::Diamonds, Rank::Two);
+    assert_eq!(u8::from(card), 14);
+
+    let card = Card::new(Suit::Spades, Rank::Joker);
+    assert_eq!(u8::from(card), 55);
+}
+
+#[test]
+fn test_card_i8_conversion() {
+    let card = Card::new(Suit::Hearts, Rank::Two);
+    assert_eq!(i8::from(card), 0);
+
+    let card = Card::new(Suit::Hearts, Rank::Joker);
+    assert_eq!(i8::from(card), 13);
+
+    let card = Card::new(Suit::Diamonds, Rank::Two);
+    assert_eq!(i8::from(card), 14);
+
+    let card = Card::new(Suit::Spades, Rank::Joker);
+    assert_eq!(i8::from(card), 55);
+}
+
+#[test]
+fn test_card_u16_conversion() {
+    let card = Card::new(Suit::Hearts, Rank::Two);
+    assert_eq!(u16::from(card), 0);
+
+    let card = Card::new(Suit::Hearts, Rank::Joker);
+    assert_eq!(u16::from(card), 13);
+
+    let card = Card::new(Suit::Diamonds, Rank::Two);
+    assert_eq!(u16::from(card), 14);
+
+    let card = Card::new(Suit::Spades, Rank::Joker);
+    assert_eq!(u16::from(card), 55);
+}
+
+#[test]
+fn test_card_i16_conversion() {
+    let card = Card::new(Suit::Hearts, Rank::Two);
+    assert_eq!(i16::from(card), 0);
+
+    let card = Card::new(Suit::Hearts, Rank::Joker);
+    assert_eq!(i16::from(card), 13);
+
+    let card = Card::new(Suit::Diamonds, Rank::Two);
+    assert_eq!(i16::from(card), 14);
+
+    let card = Card::new(Suit::Spades, Rank::Joker);
+    assert_eq!(i16::from(card), 55);
+}
+
+#[test]
+fn test_card_u32_conversion() {
+    let card = Card::new(Suit::Hearts, Rank::Two);
+    assert_eq!(u32::from(card), 0);
+
+    let card = Card::new(Suit::Hearts, Rank::Joker);
+    assert_eq!(u32::from(card), 13);
+
+    let card = Card::new(Suit::Diamonds, Rank::Two);
+    assert_eq!(u32::from(card), 14);
+
+    let card = Card::new(Suit::Spades, Rank::Joker);
+    assert_eq!(u32::from(card), 55);
+}
+
+#[test]
+fn test_card_i32_conversion() {
+    let card = Card::new(Suit::Hearts, Rank::Two);
+    assert_eq!(i32::from(card), 0);
+
+    let card = Card::new(Suit::Hearts, Rank::Joker);
+    assert_eq!(i32::from(card), 13);
+
+    let card = Card::new(Suit::Diamonds, Rank::Two);
+    assert_eq!(i32::from(card), 14);
+
+    let card = Card::new(Suit::Spades, Rank::Joker);
+    assert_eq!(i32::from(card), 55);
+}
+
+#[test]
+fn test_card_u64_conversion() {
+    let card = Card::new(Suit::Hearts, Rank::Two);
+    assert_eq!(u64::from(card), 0);
+
+    let card = Card::new(Suit::Hearts, Rank::Joker);
+    assert_eq!(u64::from(card), 13);
+
+    let card = Card::new(Suit::Diamonds, Rank::Two);
+    assert_eq!(u64::from(card), 14);
+
+    let card = Card::new(Suit::Spades, Rank::Joker);
+    assert_eq!(u64::from(card), 55);
+}
+
+#[test]
+fn test_card_i64_conversion() {
+    let card = Card::new(Suit::Hearts, Rank::Two);
+    assert_eq!(i64::from(card), 0);
+
+    let card = Card::new(Suit::Hearts, Rank::Joker);
+    assert_eq!(i64::from(card), 13);
+
+    let card = Card::new(Suit::Diamonds, Rank::Two);
+    assert_eq!(i64::from(card), 14);
+
+    let card = Card::new(Suit::Spades, Rank::Joker);
+    assert_eq!(i64::from(card), 55);
+}
+
+#[test]
+fn test_card_usize_conversion() {
     let card = Card::new(Suit::Hearts, Rank::Two);
     assert_eq!(usize::from(card), 0);
 
     let card = Card::new(Suit::Hearts, Rank::Joker);
     assert_eq!(usize::from(card), 13);
 
+    let card = Card::new(Suit::Diamonds, Rank::Two);
+    assert_eq!(usize::from(card), 14);
+
     let card = Card::new(Suit::Spades, Rank::Joker);
     assert_eq!(usize::from(card), 55);
 }
 
 #[test]
-fn test_card_int_roundtrip() {
-    for i in 0..56 {
-        let card = Card::try_from(i).unwrap();
-        let j = usize::from(card);
-        assert_eq!(i, j);
-    }
+fn test_card_isize_conversion() {
+    let card = Card::new(Suit::Hearts, Rank::Two);
+    assert_eq!(isize::from(card), 0);
+
+    let card = Card::new(Suit::Hearts, Rank::Joker);
+    assert_eq!(isize::from(card), 13);
+
+    let card = Card::new(Suit::Diamonds, Rank::Two);
+    assert_eq!(isize::from(card), 14);
+
+    let card = Card::new(Suit::Spades, Rank::Joker);
+    assert_eq!(isize::from(card), 55);
 }
 
 #[test]
@@ -239,4 +468,57 @@ fn test_different_cards_different_hashes() {
     card2.hash(&mut hasher2);
 
     assert_ne!(hasher1.finish(), hasher2.finish());
+}
+
+#[test]
+fn test_card_from_str() {
+    let card_str = "A♠";
+    let card = Card::from_str(card_str).unwrap();
+    assert_eq!(card, Card::new(Suit::Spades, Rank::Ace));
+
+    let card_str = "♦10";
+    let card = Card::from_str(card_str).unwrap();
+    assert_eq!(card, Card::new(Suit::Diamonds, Rank::Ten));
+
+    let card_str = "QuEenSpades";
+    let card = Card::from_str(card_str).unwrap();
+    assert_eq!(card, Card::new(Suit::Spades, Rank::Queen));
+
+    let card_str = "2d";
+    let card = Card::from_str(card_str).unwrap();
+    assert_eq!(card, Card::new(Suit::Diamonds, Rank::Two));
+}
+
+#[test]
+fn test_card_as_csv_row() {
+    let card = Card::new(Suit::Hearts, Rank::Two);
+    assert_eq!(card.as_csv_row(), "2,♥");
+
+    let card = Card::new(Suit::Hearts, Rank::Joker);
+    assert_eq!(card.as_csv_row(), "U,♥");
+
+    let card = Card::new(Suit::Diamonds, Rank::Two);
+    assert_eq!(card.as_csv_row(), "2,♦");
+
+    let card = Card::new(Suit::Spades, Rank::Joker);
+    assert_eq!(card.as_csv_row(), "U,♠");
+}
+
+#[test]
+fn test_card_from_csv_row() {
+    let csv_row = "2,♥";
+    let card = Card::from_csv_row(csv_row).unwrap();
+    assert_eq!(card, Card::new(Suit::Hearts, Rank::Two));
+
+    let csv_row = "U,♥";
+    let card = Card::from_csv_row(csv_row).unwrap();
+    assert_eq!(card, Card::new(Suit::Hearts, Rank::Joker));
+
+    let csv_row = "2,♦";
+    let card = Card::from_csv_row(csv_row).unwrap();
+    assert_eq!(card, Card::new(Suit::Diamonds, Rank::Two));
+
+    let csv_row = "U,♠";
+    let card = Card::from_csv_row(csv_row).unwrap();
+    assert_eq!(card, Card::new(Suit::Spades, Rank::Joker));
 }

@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
 use std::fmt;
+use std::str::FromStr;
 
 /// Represents the rank of a card. Useful for games that utilize card ranks (e.g., Poker)
 ///
@@ -85,20 +86,20 @@ impl Rank {
     /// For custom values, use a `CardComparator`.
     pub const fn value(&self) -> u8 {
         match self {
-            Rank::Two => 2,
-            Rank::Three => 3,
-            Rank::Four => 4,
-            Rank::Five => 5,
-            Rank::Six => 6,
-            Rank::Seven => 7,
-            Rank::Eight => 8,
-            Rank::Nine => 9,
-            Rank::Ten => 10,
-            Rank::Jack => 11,
-            Rank::Queen => 12,
-            Rank::King => 13,
-            Rank::Ace => 14,
-            Rank::Joker => 15,
+            Rank::Two => 0,
+            Rank::Three => 1,
+            Rank::Four => 2,
+            Rank::Five => 3,
+            Rank::Six => 4,
+            Rank::Seven => 5,
+            Rank::Eight => 6,
+            Rank::Nine => 7,
+            Rank::Ten => 8,
+            Rank::Jack => 9,
+            Rank::Queen => 10,
+            Rank::King => 11,
+            Rank::Ace => 12,
+            Rank::Joker => 13,
         }
     }
 }
@@ -118,5 +119,29 @@ impl PartialOrd for Rank {
 impl fmt::Display for Rank {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.symbol())
+    }
+}
+
+impl FromStr for Rank {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_uppercase().as_str() {
+            "2" | "TWO" => Ok(Rank::Two),
+            "3" | "THREE" => Ok(Rank::Three),
+            "4" | "FOUR" => Ok(Rank::Four),
+            "5" | "FIVE" => Ok(Rank::Five),
+            "6" | "SIX" => Ok(Rank::Six),
+            "7" | "SEVEN" => Ok(Rank::Seven),
+            "8" | "EIGHT" => Ok(Rank::Eight),
+            "9" | "NINE" => Ok(Rank::Nine),
+            "T" | "TEN" | "10" => Ok(Rank::Ten),
+            "J" | "JACK" => Ok(Rank::Jack),
+            "Q" | "QUEEN" => Ok(Rank::Queen),
+            "K" | "KING" => Ok(Rank::King),
+            "A" | "ACE" => Ok(Rank::Ace),
+            "U" | "JOKER" => Ok(Rank::Joker),
+            _ => Err(format!("Invalid rank string: {}", s)),
+        }
     }
 }

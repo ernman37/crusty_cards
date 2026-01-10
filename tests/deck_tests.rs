@@ -2,6 +2,7 @@ use crusty_cards::{
     AceLowComparator, Card, Deck, Rank, StandardComparator, Suit, TrumpComparator,
 };
 use std::collections::VecDeque;
+use std::str::FromStr;
 
 #[test]
 fn test_deck_creation() {
@@ -51,7 +52,7 @@ fn test_deck_display() {
     let display = format!("{}", deck);
     let card1 = Card::new(Suit::Hearts, Rank::Ace);
     let card2 = Card::new(Suit::Spades, Rank::King);
-    assert_eq!(display, format!("{} {} ", card1, card2));
+    assert_eq!(display, format!("{} {}", card1, card2));
 }
 
 #[test]
@@ -494,5 +495,172 @@ fn test_deck_into_iter_mut() {
         if card.rank() == Rank::Ace {
             *card = Card::new(Suit::Hearts, Rank::Two);
         }
+    }
+}
+
+#[test]
+fn test_deck_from_str_delimiter() {
+    let deck_str = "2d,3hearts,4s,5c,aCeSpades";
+    let mut deck = Deck::from_str_delimiter(deck_str, ',').unwrap();
+
+    assert_eq!(deck.len(), 5);
+    assert_eq!(deck.deal().unwrap(), Card::new(Suit::Diamonds, Rank::Two));
+    assert_eq!(deck.deal().unwrap(), Card::new(Suit::Hearts, Rank::Three));
+    assert_eq!(deck.deal().unwrap(), Card::new(Suit::Spades, Rank::Four));
+    assert_eq!(deck.deal().unwrap(), Card::new(Suit::Clubs, Rank::Five));
+    assert_eq!(deck.deal().unwrap(), Card::new(Suit::Spades, Rank::Ace));
+
+    let deck_str_invalid = "2d,invalid_card,4s";
+    let result = Deck::from_str_delimiter(deck_str_invalid, ',');
+    assert!(result.is_err());
+}
+
+#[test]
+fn test_to_and_from_str() {
+    let mut deck = Deck::new(VecDeque::from(vec![
+        Card::new(Suit::Diamonds, Rank::Two),
+        Card::new(Suit::Hearts, Rank::Three),
+        Card::new(Suit::Spades, Rank::Four),
+        Card::new(Suit::Clubs, Rank::Five),
+        Card::new(Suit::Spades, Rank::Ace),
+    ]));
+
+    let deck_str = format!("{}", deck);
+    let mut new_deck = Deck::from_str(&deck_str).unwrap();
+
+    assert_eq!(deck.len(), new_deck.len());
+    while let (Some(card1), Some(card2)) = (deck.deal(), new_deck.deal()) {
+        assert_eq!(card1, card2);
+    }
+}
+
+#[test]
+fn test_deck_to_and_from_json() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+        Card::new(Suit::Diamonds, Rank::Queen),
+    ]);
+    let deck = Deck::new(cards);
+
+    // Convert to JSON and back
+    let json = deck.to_json().unwrap();
+    let restored = Deck::from_json(&json).unwrap();
+
+    assert_eq!(deck.len(), restored.len());
+
+    // Verify cards match
+    for (original, restored) in deck.iter().zip(restored.iter()) {
+        assert_eq!(original, restored);
+    }
+}
+
+#[test]
+fn test_deck_to_json_pretty() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+    ]);
+    let deck = Deck::new(cards);
+
+    let json_pretty = deck.to_json_pretty().unwrap();
+
+    // Pretty JSON should contain newlines
+    assert!(json_pretty.contains('\n'));
+
+    // Should still be valid JSON
+    let restored = Deck::from_json(&json_pretty).unwrap();
+    assert_eq!(deck.len(), restored.len());
+}
+
+#[test]
+fn test_deck_to_and_from_yaml() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+        Card::new(Suit::Diamonds, Rank::Queen),
+    ]);
+    let deck = Deck::new(cards);
+
+    // Convert to YAML and back
+    let yaml = deck.to_yaml().unwrap();
+    let restored = Deck::from_yaml(&yaml).unwrap();
+
+    assert_eq!(deck.len(), restored.len());
+
+    // Verify cards match
+    for (original, restored) in deck.iter().zip(restored.iter()) {
+        assert_eq!(original, restored);
+    }
+}
+
+#[test]
+fn test_deck_json_format() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+    ]);
+    let deck = Deck::new(cards);
+
+    let json = deck.to_json().unwrap();
+
+    // Verify it's valid JSON structure
+    assert!(json.contains("cards"));
+    assert!(json.contains("suit"));
+    assert!(json.contains("rank"));
+}
+
+#[test]
+fn test_deck_yaml_format() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+    ]);
+    let deck = Deck::new(cards);
+
+    let yaml = deck.to_yaml().unwrap();
+
+    // YAML should contain readable structure
+    assert!(yaml.contains("cards"));
+    assert!(yaml.contains("suit"));
+    assert!(yaml.contains("rank"));
+}
+
+#[test]
+fn test_deck_empty_json_roundtrip() {
+    let deck = Deck::new(VecDeque::new());
+
+    let json = deck.to_json().unwrap();
+    let restored = Deck::from_json(&json).unwrap();
+
+    assert!(restored.is_empty());
+}
+
+#[test]
+fn test_deck_empty_yaml_roundtrip() {
+    let deck = Deck::new(VecDeque::new());
+
+    let yaml = deck.to_yaml().unwrap();
+    let restored = Deck::from_yaml(&yaml).unwrap();
+
+    assert!(restored.is_empty());
+}
+
+#[test]
+fn test_deck_to_and_from_csv() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+        Card::new(Suit::Diamonds, Rank::Queen),
+    ]);
+    let deck = Deck::new(cards);
+
+    let csv = deck.as_csv();
+    let expected = "Rank,Suit\nA,♥\nK,♠\nQ,♦\n";
+    assert_eq!(csv, expected);
+
+    let restored = Deck::from_csv(&csv).unwrap();
+    assert_eq!(deck.len(), restored.len());
+
+    // Verify cards match
+    for (original, restored) in deck.iter().zip(restored.iter()) {
+        assert_eq!(original, restored);
     }
 }

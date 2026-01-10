@@ -1,5 +1,6 @@
 use crusty_cards::Rank;
 use std::collections::HashSet;
+use std::str::FromStr;
 
 #[test]
 fn test_rank_symbol() {
@@ -21,20 +22,20 @@ fn test_rank_symbol() {
 
 #[test]
 fn test_rank_value() {
-    assert_eq!(Rank::Two.value(), 2);
-    assert_eq!(Rank::Three.value(), 3);
-    assert_eq!(Rank::Four.value(), 4);
-    assert_eq!(Rank::Five.value(), 5);
-    assert_eq!(Rank::Six.value(), 6);
-    assert_eq!(Rank::Seven.value(), 7);
-    assert_eq!(Rank::Eight.value(), 8);
-    assert_eq!(Rank::Nine.value(), 9);
-    assert_eq!(Rank::Ten.value(), 10);
-    assert_eq!(Rank::Jack.value(), 11);
-    assert_eq!(Rank::Queen.value(), 12);
-    assert_eq!(Rank::King.value(), 13);
-    assert_eq!(Rank::Ace.value(), 14);
-    assert_eq!(Rank::Joker.value(), 15);
+    assert_eq!(Rank::Two.value(), 0);
+    assert_eq!(Rank::Three.value(), 1);
+    assert_eq!(Rank::Four.value(), 2);
+    assert_eq!(Rank::Five.value(), 3);
+    assert_eq!(Rank::Six.value(), 4);
+    assert_eq!(Rank::Seven.value(), 5);
+    assert_eq!(Rank::Eight.value(), 6);
+    assert_eq!(Rank::Nine.value(), 7);
+    assert_eq!(Rank::Ten.value(), 8);
+    assert_eq!(Rank::Jack.value(), 9);
+    assert_eq!(Rank::Queen.value(), 10);
+    assert_eq!(Rank::King.value(), 11);
+    assert_eq!(Rank::Ace.value(), 12);
+    assert_eq!(Rank::Joker.value(), 13);
 }
 
 #[test]
@@ -112,4 +113,57 @@ fn test_rank_standard_constant() {
     assert!(Rank::STANDARD.contains(&Rank::Two));
     assert!(Rank::STANDARD.contains(&Rank::Ace));
     assert!(!Rank::STANDARD.contains(&Rank::Joker));
+}
+
+#[test]
+fn test_rank_from_str() {
+    // Two
+    assert_eq!(Rank::from_str("2"), Ok(Rank::Two));
+    assert_eq!(Rank::from_str("two"), Ok(Rank::Two));
+    // Three
+    assert_eq!(Rank::from_str("3"), Ok(Rank::Three));
+    assert_eq!(Rank::from_str("three"), Ok(Rank::Three));
+    // Four
+    assert_eq!(Rank::from_str("4"), Ok(Rank::Four));
+    assert_eq!(Rank::from_str("four"), Ok(Rank::Four));
+    // Five
+    assert_eq!(Rank::from_str("5"), Ok(Rank::Five));
+    assert_eq!(Rank::from_str("five"), Ok(Rank::Five));
+    // Six
+    assert_eq!(Rank::from_str("6"), Ok(Rank::Six));
+    assert_eq!(Rank::from_str("six"), Ok(Rank::Six));
+    // Seven
+    assert_eq!(Rank::from_str("7"), Ok(Rank::Seven));
+    assert_eq!(Rank::from_str("seven"), Ok(Rank::Seven));
+    // Eight
+    assert_eq!(Rank::from_str("8"), Ok(Rank::Eight));
+    assert_eq!(Rank::from_str("eight"), Ok(Rank::Eight));
+    // Nine
+    assert_eq!(Rank::from_str("9"), Ok(Rank::Nine));
+    assert_eq!(Rank::from_str("nine"), Ok(Rank::Nine));
+    // Ten
+    assert_eq!(Rank::from_str("T"), Ok(Rank::Ten));
+    assert_eq!(Rank::from_str("ten"), Ok(Rank::Ten));
+    assert_eq!(Rank::from_str("10"), Ok(Rank::Ten));
+    // Jack
+    assert_eq!(Rank::from_str("J"), Ok(Rank::Jack));
+    assert_eq!(Rank::from_str("jack"), Ok(Rank::Jack));
+    // Queen
+    assert_eq!(Rank::from_str("Q"), Ok(Rank::Queen));
+    assert_eq!(Rank::from_str("queen"), Ok(Rank::Queen));
+    // King
+    assert_eq!(Rank::from_str("K"), Ok(Rank::King));
+    assert_eq!(Rank::from_str("king"), Ok(Rank::King));
+    // Ace
+    assert_eq!(Rank::from_str("A"), Ok(Rank::Ace));
+    assert_eq!(Rank::from_str("ace"), Ok(Rank::Ace));
+    //Joker
+    assert_eq!(Rank::from_str("U"), Ok(Rank::Joker));
+    assert_eq!(Rank::from_str("joker"), Ok(Rank::Joker));
+    // Case insensitivity
+    assert_eq!(Rank::from_str("aCe"), Ok(Rank::Ace));
+
+    // Invalid rank
+    assert!(Rank::from_str("invalid").is_err());
+
 }

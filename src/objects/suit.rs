@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::fmt;
+use std::{fmt, str::FromStr};
 
 use super::color::Color;
 
@@ -39,10 +39,38 @@ impl Suit {
             Suit::Spades => "♠",
         }
     }
+
+    /// Returns an integer index for the suit, ranging from 0 (Hearts) to 3 (Spades).
+    ///
+    /// This is useful for compact suit representations, such as card-to-integer
+    /// conversions or array indexing by suit.
+    pub const fn value(&self) -> u8 {
+        match self {
+            Suit::Hearts => 0,
+            Suit::Diamonds => 1,
+            Suit::Clubs => 2,
+            Suit::Spades => 3,
+        }
+    }
+
 }
 
 impl fmt::Display for Suit {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.symbol())
+    }
+}
+
+impl FromStr for Suit {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_uppercase().as_str() {
+            "HEARTS" | "H" | "♥" => Ok(Suit::Hearts),
+            "DIAMONDS" | "D" | "♦" => Ok(Suit::Diamonds),
+            "CLUBS" | "C" | "♣" => Ok(Suit::Clubs),
+            "SPADES" | "S" | "♠" => Ok(Suit::Spades),
+            _ => Err(format!("Invalid suit string: {}", s)),
+        }
     }
 }

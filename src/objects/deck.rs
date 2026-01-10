@@ -3,6 +3,7 @@ use rand::seq::SliceRandom;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 use std::ops::{Sub, SubAssign, Add, AddAssign, Mul, MulAssign};
+use std::str::FromStr;
 use std::{fmt};
 use std::convert::{From, TryFrom};
 
@@ -18,10 +19,7 @@ pub struct Deck {
 
 impl fmt::Display for Deck {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        for card in &self.cards {
-            write!(f, "{} ", card)?;
-        }
-        Ok(())
+        write!(f, "{}", self.as_string_delimiter(' '))
     }
 }
 
@@ -122,6 +120,56 @@ impl Deck {
         self.cards.clear();
     }
 
+    /// Returns a string representation of the deck with the specified delimiter.
+    pub fn as_string_delimiter(&self, delimiter: char) -> String {
+        self.cards
+            .iter()
+            .map(|card| format!("{}", card))
+            .collect::<Vec<String>>()
+            .join(&delimiter.to_string())
+    }
+
+    /// Creates a Deck from a string representation of cards separated by a delimiter.
+    pub fn from_str_delimiter(s: &str, delimiter: char) -> Result<Self, String> {
+        let mut cards = VecDeque::new();
+        for part in s.split(delimiter) {
+            let part = part.trim();
+            if part.is_empty() {
+                continue;
+            }
+            match Card::from_str(part) {
+                Ok(card) => cards.push_back(card),
+                Err(e) => return Err(format!("Failed to parse card '{}': {}", part, e)),
+            }
+        }
+        Ok(Deck::new(cards))
+    }
+
+    /// Serializes the deck to a JSON string.
+    pub fn to_json(&self) -> Result<String, serde_json::Error> {
+        serde_json::to_string(self)
+    }
+
+    /// Serializes the deck to a pretty-printed JSON string.
+    pub fn to_json_pretty(&self) -> Result<String, serde_json::Error> {
+        serde_json::to_string_pretty(self)
+    }
+
+    /// Creates a Deck from a JSON string.
+    pub fn from_json(s: &str) -> Result<Self, serde_json::Error> {
+        serde_json::from_str(s)
+    }
+
+    /// Serializes the deck to a YAML string.
+    pub fn to_yaml(&self) -> Result<String, serde_yaml::Error> {
+        serde_yaml::to_string(self)
+    }
+
+    /// Creates a Deck from a YAML string.
+    pub fn from_yaml(s: &str) -> Result<Self, serde_yaml::Error> {
+        serde_yaml::from_str(s)
+    }
+
     /// Sorts the deck using a custom comparator.
     ///
     /// # Example
@@ -162,6 +210,34 @@ impl Deck {
         let mut cards_vec: Vec<Card> = self.cards.drain(..).collect();
         cards_vec.sort_by(compare);
         self.cards = VecDeque::from(cards_vec);
+    }
+
+    /// Returns a CSV representation of the deck.
+    pub fn as_csv(&self) -> String {
+        let mut csv = "Rank,Suit\n".to_string();
+        for card in &self.cards {
+            csv.push_str(&card.as_csv_row());
+            csv.push('\n');
+        }
+        csv
+    }
+
+    /// Creates a Deck from a CSV string.
+    pub fn from_csv(s: &str) -> Result<Self, String> {
+        let mut cards = VecDeque::new();
+        for (i, line) in s.lines().enumerate() {
+            if i == 0 {
+                continue;
+            }
+            if line.trim().is_empty() {
+                continue;
+            }
+            match Card::from_csv_row(line) {
+                Ok(card) => cards.push_back(card),
+                Err(e) => return Err(format!("Failed to parse line {}: {}", i + 1, e)),
+            }
+        }
+        Ok(Deck::new(cards))
     }
 }
 
@@ -319,5 +395,14 @@ impl<'a> IntoIterator for &'a mut Deck {
 
     fn into_iter(self) -> Self::IntoIter {
         self.iter_mut()
+    }
+}
+
+impl FromStr for Deck {
+    type Err = String;
+
+    /// Creates a Deck from a string representation of cards separated by spaces.
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Deck::from_str_delimiter(s, ' ')
     }
 }

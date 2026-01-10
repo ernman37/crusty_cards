@@ -1,5 +1,6 @@
 use crusty_cards::{Color, Suit};
 use std::collections::HashSet;
+use std::str::FromStr;
 
 #[test]
 fn test_suit_color() {
@@ -83,4 +84,34 @@ fn test_suit_black_constant() {
     assert_eq!(Suit::BLACK.len(), 2);
     assert!(Suit::BLACK.contains(&Suit::Clubs));
     assert!(Suit::BLACK.contains(&Suit::Spades));
+}
+
+#[test]
+fn test_suit_value(){
+    assert_eq!(Suit::Hearts.value(), 0);
+    assert_eq!(Suit::Diamonds.value(), 1);
+    assert_eq!(Suit::Clubs.value(), 2);
+    assert_eq!(Suit::Spades.value(), 3);
+}
+
+#[test]
+fn test_suit_from_str() {
+    // Hearts
+    assert_eq!(Suit::from_str("Hearts"), Ok(Suit::Hearts));
+    assert_eq!(Suit::from_str("h"), Ok(Suit::Hearts));
+    assert_eq!(Suit::from_str("♥"), Ok(Suit::Hearts));
+    // Diamonds
+    assert_eq!(Suit::from_str("D"), Ok(Suit::Diamonds));
+    assert_eq!(Suit::from_str("diamonds"), Ok(Suit::Diamonds));
+    assert_eq!(Suit::from_str("♦"), Ok(Suit::Diamonds));
+    // Clubs
+    assert_eq!(Suit::from_str("C"), Ok(Suit::Clubs));
+    assert_eq!(Suit::from_str("♣"), Ok(Suit::Clubs));
+    assert_eq!(Suit::from_str("clubs"), Ok(Suit::Clubs));
+    // Spades
+    assert_eq!(Suit::from_str("S"), Ok(Suit::Spades));
+    assert_eq!(Suit::from_str("spades"), Ok(Suit::Spades));
+    assert_eq!(Suit::from_str("♠"), Ok(Suit::Spades));
+    // Invalid suit
+    assert_eq!(Suit::from_str("X"), Err("Invalid suit string: X".to_string()));
 }
