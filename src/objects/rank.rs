@@ -141,7 +141,7 @@ impl FromStr for Rank {
             "K" | "KING" => Ok(Rank::King),
             "A" | "ACE" => Ok(Rank::Ace),
             "U" | "JOKER" => Ok(Rank::Joker),
-            _ => Err(format!("Invalid rank symbol: {}", s)),
+            _ => Err(format!("Invalid rank string: {}", s)),
         }
     }
 }
