@@ -16,6 +16,12 @@ fn test_deck_creation() {
 }
 
 #[test]
+fn test_deck_default() {
+    let deck = Deck::default();
+    assert!(deck.is_empty());
+}
+
+#[test]
 fn test_deck_cut() {
     let cards = VecDeque::from(vec![
         Card::new(Suit::Hearts, Rank::Ace),
