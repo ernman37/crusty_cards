@@ -1,6 +1,7 @@
 use crusty_cards::{Card, Rank, Suit};
 use std::collections::{HashMap, HashSet};
 use std::hash::{DefaultHasher, Hash, Hasher};
+use std::str::FromStr;
 
 #[test]
 fn test_card_new() {
@@ -467,4 +468,23 @@ fn test_different_cards_different_hashes() {
     card2.hash(&mut hasher2);
 
     assert_ne!(hasher1.finish(), hasher2.finish());
+}
+
+#[test]
+fn test_card_from_str() {
+    let card_str = "A♠";
+    let card = Card::from_str(card_str).unwrap();
+    assert_eq!(card, Card::new(Suit::Spades, Rank::Ace));
+
+    let card_str = "♦10";
+    let card = Card::from_str(card_str).unwrap();
+    assert_eq!(card, Card::new(Suit::Diamonds, Rank::Ten));
+
+    let card_str = "QuEenSpades";
+    let card = Card::from_str(card_str).unwrap();
+    assert_eq!(card, Card::new(Suit::Spades, Rank::Queen));
+
+    let card_str = "2d";
+    let card = Card::from_str(card_str).unwrap();
+    assert_eq!(card, Card::new(Suit::Diamonds, Rank::Two));
 }

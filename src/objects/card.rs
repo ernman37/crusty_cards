@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::convert::{From, TryFrom};
 use std::fmt;
+use std::str::FromStr;
 
 use super::color::Color;
 use super::rank::Rank;
@@ -268,5 +269,31 @@ impl TryFrom<isize> for Card {
             return Err("Value out of range for standard 56-card deck (including 4 jokers, one of each suit)");
         }
         Self::try_from(value as u8)
+    }
+}
+
+impl FromStr for Card {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let s = s.trim();
+        if s.is_empty() {
+            return Err("Input string is empty".to_string());
+        }
+        if s.chars().count() < 2 {
+            return Err("Input string is too short to represent a card".to_string());
+        }
+
+        let char_indices: Vec<usize> = s.char_indices().map(|(i, _)| i).collect();
+        for &split_pos in &char_indices[1..] {
+            let (left, right) = s.split_at(split_pos);
+            if let (Ok(suit), Ok(rank)) = (Suit::from_str(left), Rank::from_str(right)) {
+                return Ok(Card::new(suit, rank));
+            }
+            if let (Ok(rank), Ok(suit)) = (Rank::from_str(left), Suit::from_str(right)) {
+                return Ok(Card::new(suit, rank));
+            }
+        }
+        Err(format!("Invalid card string: {}", s))
     }
 }
