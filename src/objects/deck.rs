@@ -29,6 +29,13 @@ impl Deck {
         Deck { cards }
     }
 
+    /// Create a default deck with no cards.
+    pub fn default() -> Self {
+        Deck {
+            cards: VecDeque::new(),
+        }
+    }
+
     /// Creates a new Deck using a DeckFactory.
     pub fn from_factory<F>(factory: F) -> Self
     where
