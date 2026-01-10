@@ -178,7 +178,7 @@ impl TryFrom<u8> for Card {
     type Error = &'static str;
 
     fn try_from(value: u8) -> Result<Self, Self::Error> {
-        if value >= 56 {
+        if !(0..56).contains(&value) {
             return Err("Value out of range for standard 56-card deck (including 4 jokers, one of each suit)");
         }
 
@@ -193,7 +193,7 @@ impl TryFrom<i8> for Card {
     type Error = &'static str;
 
     fn try_from(value: i8) -> Result<Self, Self::Error> {
-        if value < 0 || value >= 56 {
+        if !(0..56).contains(&value) {
             return Err("Value out of range for standard 56-card deck (including 4 jokers, one of each suit)");
         }
         Self::try_from(value as u8)
@@ -204,7 +204,7 @@ impl TryFrom<u16> for Card {
     type Error = &'static str;
 
     fn try_from(value: u16) -> Result<Self, Self::Error> {
-        if value >= 56 {
+        if !(0..56).contains(&value) {
             return Err("Value out of range for standard 56-card deck (including 4 jokers, one of each suit)");
         }
         Self::try_from(value as u8)
@@ -215,7 +215,7 @@ impl TryFrom<i16> for Card {
     type Error = &'static str;
 
     fn try_from(value: i16) -> Result<Self, Self::Error> {
-        if value < 0 || value >= 56 {
+        if !(0..56).contains(&value) {
             return Err("Value out of range for standard 56-card deck (including 4 jokers, one of each suit)");
         }
         Self::try_from(value as u8)
@@ -226,7 +226,7 @@ impl TryFrom<u32> for Card {
     type Error = &'static str;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
-        if value >= 56 {
+        if !(0..56).contains(&value) {
             return Err("Value out of range for standard 56-card deck (including 4 jokers, one of each suit)");
         }
         Self::try_from(value as u8)
@@ -237,7 +237,7 @@ impl TryFrom<i32> for Card {
     type Error = &'static str;
 
     fn try_from(value: i32) -> Result<Self, Self::Error> {
-        if value < 0 || value >= 56 {
+        if !(0..56).contains(&value) {
             return Err("Value out of range for standard 56-card deck (including 4 jokers, one of each suit)");
         }
         Self::try_from(value as u8)
@@ -248,7 +248,7 @@ impl TryFrom<u64> for Card {
     type Error = &'static str;
 
     fn try_from(value: u64) -> Result<Self, Self::Error> {
-        if value >= 56 {
+        if !(0..56).contains(&value) {
             return Err("Value out of range for standard 56-card deck (including 4 jokers, one of each suit)");
         }
         Self::try_from(value as u8)
@@ -259,7 +259,7 @@ impl TryFrom<i64> for Card {
     type Error = &'static str;
 
     fn try_from(value: i64) -> Result<Self, Self::Error> {
-        if value < 0 || value >= 56 {
+        if !(0..56).contains(&value) {
             return Err("Value out of range for standard 56-card deck (including 4 jokers, one of each suit)");
         }
         Self::try_from(value as u8)
@@ -270,7 +270,7 @@ impl TryFrom<usize> for Card {
     type Error = &'static str;
 
     fn try_from(value: usize) -> Result<Self, Self::Error> {
-        if value >= 56 {
+        if !(0..56).contains(&value) {
             return Err("Value out of range for standard 56-card deck (including 4 jokers, one of each suit)");
         }
         Self::try_from(value as u8)
@@ -281,7 +281,7 @@ impl TryFrom<isize> for Card {
     type Error = &'static str;
 
     fn try_from(value: isize) -> Result<Self, Self::Error> {
-        if value < 0 || value >= 56 {
+        if !(0..56).contains(&value) {
             return Err("Value out of range for standard 56-card deck (including 4 jokers, one of each suit)");
         }
         Self::try_from(value as u8)
