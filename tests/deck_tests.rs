@@ -83,7 +83,7 @@ fn test_deck_shuffle() {
     }
     assert!(
         false,
-        "Congratulations you just shuffled the deck randomly 100 times without changing its order, You should go buy a lottery ticket"
+        "Congratulations, you just shuffled the deck randomly 100 times without changing its order. You should go buy a lottery ticket."
     );
 }
 
