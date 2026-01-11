@@ -1099,7 +1099,7 @@ fn test_deck_overhand_shuffle_times() {
             return;
         }
     }
-    assert!(false, "Congratulations you just shuffled the deck randomly 100 times without changing its order, You should go buy a lottery ticket")
+    assert!(false, "Congratulations, you just shuffled the deck randomly 100 times without changing its order. You should go buy a lottery ticket")
 }
 
 #[test]
