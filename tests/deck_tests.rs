@@ -1,4 +1,6 @@
-use crusty_cards::{AceLowComparator, Card, Deck, Rank, StandardComparator, Suit, TrumpComparator};
+use crusty_cards::{
+    AceLowComparator, Card, Deck, Rank, Standard52, StandardComparator, Suit, TrumpComparator,
+};
 use std::collections::VecDeque;
 use std::str::FromStr;
 
@@ -696,7 +698,7 @@ fn test_deck_to_and_from_csv() {
     ]);
     let deck = Deck::new(cards);
 
-    let csv = deck.as_csv();
+    let csv = deck.to_csv();
     let expected = "Rank,Suit\nA,♥\nK,♠\nQ,♦\n";
     assert_eq!(csv, expected);
 
@@ -1007,7 +1009,7 @@ fn test_deck_csv_roundtrip() {
         }
     }
     let deck = Deck::new(cards);
-    let csv = deck.as_csv();
+    let csv = deck.to_csv();
     let deserialized_deck: Deck = Deck::from_csv(&csv).unwrap();
     assert_eq!(deck, deserialized_deck);
 }
@@ -1253,4 +1255,10 @@ fn test_deck_ref_into_iterator_empty() {
     }
 
     assert_eq!(count, 0);
+}
+
+#[test]
+fn test_deck_from_factory() {
+    let deck = Deck::from_factory(Standard52);
+    assert_eq!(deck.len(), 52);
 }
