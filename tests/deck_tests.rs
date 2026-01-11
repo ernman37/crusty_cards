@@ -1,4 +1,6 @@
-use crusty_cards::{AceLowComparator, Card, Deck, Rank, Standard52, StandardComparator, Suit, TrumpComparator};
+use crusty_cards::{
+    AceLowComparator, Card, Deck, Rank, Standard52, StandardComparator, Suit, TrumpComparator,
+};
 use std::collections::VecDeque;
 use std::str::FromStr;
 
