@@ -884,7 +884,7 @@ fn test_deck_split_at() {
     assert_eq!(right.len(), 0);
     assert_eq!(left.peek(), Some(&Card::new(Suit::Hearts, Rank::Ace)));
 
-    //Split at len + 1
+    // Split at len + 1
     let (left, right) = deck.split_at(deck.len() + 1);
     assert_eq!(left.len(), 3);
     assert_eq!(right.len(), 0);
