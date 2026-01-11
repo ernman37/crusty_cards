@@ -942,16 +942,16 @@ fn test_deck_deal_n_bottom() {
     ]);
     let mut deck = Deck::new(cards);
 
-    let dealt_cards = deck.deal_n(2).unwrap();
+    let dealt_cards = deck.deal_n_bottom(2).unwrap();
     assert_eq!(dealt_cards.len(), 2);
-    assert_eq!(dealt_cards[0], Card::new(Suit::Hearts, Rank::Ace));
-    assert_eq!(dealt_cards[1], Card::new(Suit::Spades, Rank::King));
+    assert_eq!(dealt_cards[0], Card::new(Suit::Clubs, Rank::Jack));
+    assert_eq!(dealt_cards[1], Card::new(Suit::Diamonds, Rank::Queen));
     assert_eq!(deck.len(), 2);
 
-    let dealt_cards_empty = deck.deal_n(0).unwrap();
+    let dealt_cards_empty = deck.deal_n_bottom(0).unwrap();
     assert_eq!(dealt_cards_empty.len(), 0);
 
-    let dealt_cards_exceed = deck.deal_n(deck.len() + 1);
+    let dealt_cards_exceed = deck.deal_n_bottom(deck.len() + 1);
     assert_eq!(dealt_cards_exceed, None);
 }
 
