@@ -2,7 +2,19 @@ use crate::{Card, DeckFactory, Rank, Suit};
 
 use std::collections::VecDeque;
 
-/// A standard 52-card deck factory
+/// Factory for a standard 52-card deck.
+///
+/// Generates all combinations of 4 suits × 13 ranks (Two through Ace).
+/// Cards are ordered by rank, then by suit within each rank.
+///
+/// # Examples
+///
+/// ```rust
+/// use crusty_cards::{Deck, Standard52};
+///
+/// let deck = Deck::from_factory(Standard52);
+/// assert_eq!(deck.len(), 52);
+/// ```
 pub struct Standard52;
 
 impl DeckFactory for Standard52 {
@@ -14,8 +26,20 @@ impl DeckFactory for Standard52 {
     }
 }
 
-/// A standard 54-card deck factory (including 2 jokers)
+/// Factory for a 54-card deck with 2 jokers.
+///
+/// Generates a standard 52-card deck plus a red joker (Hearts) and black joker (Spades).
+///
+/// # Examples
+///
+/// ```rust
+/// use crusty_cards::{Deck, Standard54};
+///
+/// let deck = Deck::from_factory(Standard54);
+/// assert_eq!(deck.len(), 54);
+/// ```
 pub struct Standard54;
+
 impl DeckFactory for Standard54 {
     fn generate(&self) -> VecDeque<Card> {
         let mut cards = Standard52.generate();
