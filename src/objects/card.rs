@@ -58,7 +58,7 @@ impl fmt::Display for Card {
     ///
     /// # Examples
     /// ```
-    /// use crusty_cards::Card;
+    /// use crusty_cards::{Card, Suit, Rank};
     /// let card = Card::new(Suit::Hearts, Rank::Ace);
     /// assert_eq!(card.to_string(), "A♥");
     /// ```
