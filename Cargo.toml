@@ -8,6 +8,7 @@ license = "Beerware"
 readme = "README.md"
 keywords = ['cards', 'playing-cards', 'casino', 'card-games', 'games']
 categories = []
+repository = 'https://github.com/ernman37/crusty_cards'
 
 
 [dependencies]

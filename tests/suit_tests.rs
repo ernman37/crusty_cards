@@ -45,7 +45,10 @@ fn test_suit_ordering() {
 fn test_suit_sorting() {
     let mut suits = vec![Suit::Spades, Suit::Hearts, Suit::Clubs, Suit::Diamonds];
     suits.sort();
-    assert_eq!(suits, vec![Suit::Hearts, Suit::Diamonds, Suit::Clubs, Suit::Spades]);
+    assert_eq!(
+        suits,
+        vec![Suit::Hearts, Suit::Diamonds, Suit::Clubs, Suit::Spades]
+    );
 }
 
 #[test]
@@ -87,7 +90,7 @@ fn test_suit_black_constant() {
 }
 
 #[test]
-fn test_suit_value(){
+fn test_suit_value() {
     assert_eq!(Suit::Hearts.value(), 0);
     assert_eq!(Suit::Diamonds.value(), 1);
     assert_eq!(Suit::Clubs.value(), 2);
@@ -113,5 +116,8 @@ fn test_suit_from_str() {
     assert_eq!(Suit::from_str("spades"), Ok(Suit::Spades));
     assert_eq!(Suit::from_str("♠"), Ok(Suit::Spades));
     // Invalid suit
-    assert_eq!(Suit::from_str("X"), Err("Invalid suit string: X".to_string()));
+    assert_eq!(
+        Suit::from_str("X"),
+        Err("Invalid suit string: X".to_string())
+    );
 }

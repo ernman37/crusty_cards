@@ -1,18 +1,19 @@
 use rand::rng;
 use rand::seq::SliceRandom;
+use rand::Rng;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
-use std::ops::{Sub, SubAssign, Add, AddAssign, Mul, MulAssign};
-use std::str::FromStr;
-use std::{fmt};
 use std::convert::{From, TryFrom};
+use std::fmt;
+use std::ops::{Add, AddAssign, Index, IndexMut, Mul, MulAssign, Sub, SubAssign};
+use std::str::FromStr;
 
 use crate::Card;
 use crate::CardComparator;
 use crate::DeckFactory;
 
 /// A struct representing a deck of playing cards.
-#[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
 pub struct Deck {
     cards: VecDeque<Card>,
 }
@@ -27,13 +28,6 @@ impl Deck {
     /// Creates a new Deck with the given cards.
     pub fn new(cards: VecDeque<Card>) -> Self {
         Deck { cards }
-    }
-
-    /// Create a default deck with no cards.
-    pub fn default() -> Self {
-        Deck {
-            cards: VecDeque::new(),
-        }
     }
 
     /// Creates a new Deck using a DeckFactory.
@@ -58,7 +52,7 @@ impl Deck {
 
     /// Cuts the deck at the given index.
     pub fn cut(&mut self, index: usize) -> bool {
-        if index >= self.cards.len() {
+        if index >= self.len() {
             return false;
         }
         let mut top = self.cards.split_off(index);
@@ -67,9 +61,56 @@ impl Deck {
         true
     }
 
+    /// Returns if the card is in the deck.
+    pub fn contains(&self, card: &Card) -> bool {
+        self.cards.contains(card)
+    }
+
+    /// Returns the index of the card in the deck, if it exists.
+    pub fn find(&self, card: &Card) -> Option<usize> {
+        self.cards.iter().position(|c| c == card)
+    }
+
+    /// Inserts a card at the specified index in the deck.
+    pub fn insert_at(&mut self, card: Card, index: usize) -> bool {
+        if index > self.cards.len() {
+            return false;
+        }
+        self.cards.insert(index, card);
+        true
+    }
+
+    /// Removes a card from the specified index in the deck
+    pub fn remove_at(&mut self, index: usize) -> Option<Card> {
+        if index >= self.cards.len() {
+            return None;
+        }
+        self.cards.remove(index)
+    }
+
+    /// Reverses the order of cards in self
+    pub fn reverse(&mut self) {
+        self.cards = self.cards.iter().cloned().rev().collect();
+    }
+
+    /// Counts occurrence of a card in deck
+    pub fn count(&self, card: &Card) -> usize {
+        self.cards.iter().filter(|&&c| c == *card).count()
+    }
+
     /// Returns the number of cards in the deck.
     pub fn len(&self) -> usize {
         self.cards.len()
+    }
+
+    /// Returns two decks split at the given index.
+    /// The first deck contains cards [0, index), the second contains [index, len).
+    /// If index > len, returns (clone of self, empty deck).
+    pub fn split_at(&self, index: usize) -> (Self, Self) {
+        let index = index.min(self.cards.len());
+        let left: VecDeque<Card> = self.cards.iter().take(index).cloned().collect();
+        let right: VecDeque<Card> = self.cards.iter().skip(index).cloned().collect();
+        (Deck::new(left), Deck::new(right))
     }
 
     /// Checks if the deck is empty.
@@ -92,9 +133,69 @@ impl Deck {
         }
     }
 
+    /// Riffle shuffles the deck of cards.
+    pub fn riffle_shuffle(&mut self) {
+        let middle = self.len() / 2;
+        let (mut top, mut bottom) = self.split_at(middle);
+        let mut shuffled = VecDeque::new();
+        while !bottom.is_empty() || !top.is_empty() {
+            if !bottom.is_empty() {
+                shuffled.push_back(bottom.deal().unwrap());
+            }
+            if !top.is_empty() {
+                shuffled.push_back(top.deal().unwrap());
+            }
+        }
+        self.cards = shuffled;
+    }
+
+    /// Riffle shuffle times
+    pub fn riffle_shuffle_times(&mut self, times: usize) {
+        for _ in 0..times {
+            self.riffle_shuffle();
+        }
+    }
+
+    /// Overhand Shuffle
+    pub fn overhand_shuffle(&mut self) {
+        let mut left = Deck::default();
+        while !self.is_empty() {
+            let random_size = if self.len() == 1 {
+                1
+            } else {
+                rand::rng().random_range(1..=self.len() / 2)
+            };
+            left.add_cards(self.deal_n(random_size).unwrap());
+        }
+        self.cards = left.cards;
+    }
+
+    /// Overhand shuffle times
+    pub fn overhand_shuffle_times(&mut self, times: usize) {
+        for _ in 0..times {
+            self.overhand_shuffle();
+        }
+    }
+
     /// Deals a card from the top of the deck.
     pub fn deal(&mut self) -> Option<Card> {
         self.cards.pop_front()
+    }
+
+    /// Deals n amount of cards from the top of the deck
+    /// If n > deck.len() return None
+    /// if n == 0 return Some(Vec::new())
+    /// if n <= deck.len() return Some(Vec<Card>)
+    pub fn deal_n(&mut self, n: usize) -> Option<Vec<Card>> {
+        if self.len() < n {
+            return None;
+        }
+        let mut cards = Vec::new();
+        for _ in 0..n {
+            let card = self.deal()?;
+            cards.push(card);
+        }
+        Some(cards)
     }
 
     /// Deals a card from the bottom of the deck.
@@ -102,14 +203,41 @@ impl Deck {
         self.cards.pop_back()
     }
 
+    /// Deals n amount of cards from the bottom of the deck
+    pub fn deal_n_bottom(&mut self, n: usize) -> Option<Vec<Card>> {
+        if self.len() < n {
+            return None;
+        }
+        let mut cards = Vec::new();
+        for _ in 0..n {
+            let card = self.deal_bottom()?;
+            cards.push(card);
+        }
+        Some(cards)
+    }
+
     /// Adds a card to the top of the deck.
     pub fn add_card(&mut self, card: Card) {
         self.cards.push_front(card);
     }
 
+    /// Adds a vec of cards to the top of the deck.
+    pub fn add_cards(&mut self, cards: Vec<Card>) {
+        for card in cards.into_iter().rev() {
+            self.add_card(card);
+        }
+    }
+
     /// Adds a card to the bottom of the deck.
     pub fn add_card_bottom(&mut self, card: Card) {
         self.cards.push_back(card);
+    }
+
+    /// Adds a vec of cards to the bottom of the deck.
+    pub fn add_cards_bottom(&mut self, cards: Vec<Card>) {
+        for card in cards {
+            self.add_card_bottom(card);
+        }
     }
 
     /// Peeks at the top card of the deck without removing it.
@@ -120,6 +248,11 @@ impl Deck {
     /// Peeks at the bottom card of the deck without removing it.
     pub fn peek_bottom(&self) -> Option<&Card> {
         self.cards.back()
+    }
+
+    /// Peeks at index of the deck without removing it.
+    pub fn peek_at(&self, index: usize) -> Option<&Card> {
+        self.cards.get(index)
     }
 
     /// Clears the deck of all cards.
@@ -411,5 +544,27 @@ impl FromStr for Deck {
     /// Creates a Deck from a string representation of cards separated by spaces.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Deck::from_str_delimiter(s, ' ')
+    }
+}
+
+impl Index<usize> for Deck {
+    type Output = Card;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.cards[index]
+    }
+}
+
+impl IndexMut<usize> for Deck {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.cards[index]
+    }
+}
+
+impl FromIterator<Card> for Deck {
+    /// Creates a Deck from an iterator of Cards.
+    fn from_iter<I: IntoIterator<Item = Card>>(iter: I) -> Self {
+        let cards: VecDeque<Card> = iter.into_iter().collect();
+        Deck::new(cards)
     }
 }

@@ -52,7 +52,6 @@ impl Suit {
             Suit::Spades => 3,
         }
     }
-
 }
 
 impl fmt::Display for Suit {
