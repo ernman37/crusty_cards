@@ -1028,7 +1028,7 @@ fn test_deck_riffle_shuffle() {
 }
 
 #[test]
-fn test_deck_riffle_shuffle_odd(){
+fn test_deck_riffle_shuffle_odd() {
     let cards = vec![
         Card::new(Suit::Hearts, Rank::Ace),
         Card::new(Suit::Spades, Rank::King),

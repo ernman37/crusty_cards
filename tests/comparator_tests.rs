@@ -30,7 +30,7 @@ fn test_standard_max() {
 }
 
 #[test]
-fn test_standard_min(){
+fn test_standard_min() {
     let cmp = StandardComparator;
     let ace = Card::new(Suit::Spades, Rank::Ace);
     let king = Card::new(Suit::Hearts, Rank::King);

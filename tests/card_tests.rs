@@ -537,7 +537,7 @@ fn from_csv_row_invalid() {
 }
 
 #[test]
-fn from_usize_out_of_range(){
+fn from_usize_out_of_range() {
     let size = usize::MAX;
     let card = Card::try_from(size);
     assert!(card.is_err());

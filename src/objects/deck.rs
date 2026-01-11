@@ -139,8 +139,8 @@ impl Deck {
         let mut shuffled = VecDeque::with_capacity(self.len());
 
         for i in 0..middle {
-            shuffled.push_back(self.cards[middle + i]); // bottom card
-            shuffled.push_back(self.cards[i]); // top card
+            shuffled.push_back(self.cards[middle + i]);
+            shuffled.push_back(self.cards[i]);
         }
 
         if self.len() % 2 == 1 {
