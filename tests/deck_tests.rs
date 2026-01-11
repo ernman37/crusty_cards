@@ -696,7 +696,7 @@ fn test_deck_to_and_from_csv() {
     ]);
     let deck = Deck::new(cards);
 
-    let csv = deck.as_csv();
+    let csv = deck.to_csv();
     let expected = "Rank,Suit\nA,♥\nK,♠\nQ,♦\n";
     assert_eq!(csv, expected);
 
@@ -1007,7 +1007,7 @@ fn test_deck_csv_roundtrip() {
         }
     }
     let deck = Deck::new(cards);
-    let csv = deck.as_csv();
+    let csv = deck.to_csv();
     let deserialized_deck: Deck = Deck::from_csv(&csv).unwrap();
     assert_eq!(deck, deserialized_deck);
 }

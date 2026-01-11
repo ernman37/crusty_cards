@@ -21,8 +21,8 @@ fn test_color_hash_in_hashset() {
 
 #[test]
 fn test_color_display() {
-    assert_eq!(format!("{}", Color::Red), "Red");
-    assert_eq!(format!("{}", Color::Black), "Black");
+    assert_eq!(format!("{}", Color::Red), "R");
+    assert_eq!(format!("{}", Color::Black), "B");
 }
 
 #[test]
