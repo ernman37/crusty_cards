@@ -165,5 +165,4 @@ fn test_rank_from_str() {
 
     // Invalid rank
     assert!(Rank::from_str("invalid").is_err());
-
 }

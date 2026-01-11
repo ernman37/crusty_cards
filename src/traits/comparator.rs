@@ -62,12 +62,20 @@ pub trait CardComparator {
 
     /// Returns the higher card, or `a` if equal.
     fn max<'a>(&self, a: &'a Card, b: &'a Card) -> &'a Card {
-        if self.compare(a, b) != Ordering::Less { a } else { b }
+        if self.compare(a, b) != Ordering::Less {
+            a
+        } else {
+            b
+        }
     }
 
     /// Returns the lower card, or `a` if equal.
     fn min<'a>(&self, a: &'a Card, b: &'a Card) -> &'a Card {
-        if self.compare(a, b) != Ordering::Greater { a } else { b }
+        if self.compare(a, b) != Ordering::Greater {
+            a
+        } else {
+            b
+        }
     }
 }
 

@@ -3,11 +3,10 @@ use rand::seq::SliceRandom;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
+use std::convert::{From, TryFrom};
+use std::fmt;
 use std::ops::{Add, AddAssign, Index, IndexMut, Mul, MulAssign, Sub, SubAssign};
 use std::str::FromStr;
-use std::{fmt};
-use std::convert::{From, TryFrom};
-
 
 use crate::Card;
 use crate::CardComparator;
@@ -61,7 +60,6 @@ impl Deck {
         self.cards = top;
         true
     }
-
 
     /// Returns if the card is in the deck.
     pub fn contains(&self, card: &Card) -> bool {
@@ -165,7 +163,7 @@ impl Deck {
             let random_size = if self.len() == 1 {
                 1
             } else {
-                rand::rng().random_range(1..=self.len()/2)
+                rand::rng().random_range(1..=self.len() / 2)
             };
             left.add_cards(self.deal_n(random_size).unwrap());
         }

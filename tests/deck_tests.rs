@@ -1,6 +1,4 @@
-use crusty_cards::{
-    AceLowComparator, Card, Deck, Rank, StandardComparator, Suit, TrumpComparator,
-};
+use crusty_cards::{AceLowComparator, Card, Deck, Rank, StandardComparator, Suit, TrumpComparator};
 use std::collections::VecDeque;
 use std::str::FromStr;
 
@@ -459,7 +457,7 @@ fn test_deck_sort_by_custom_function() {
 #[test]
 fn test_deck_sort_by_trump_comparator() {
     let cards = VecDeque::from(vec![
-        Card::new(Suit::Spades, Rank::Ace),    // Non-trump Ace
+        Card::new(Suit::Spades, Rank::Ace),   // Non-trump Ace
         Card::new(Suit::Hearts, Rank::Two),   // Trump Two (hearts is trump)
         Card::new(Suit::Clubs, Rank::King),   // Non-trump King
         Card::new(Suit::Hearts, Rank::Seven), // Trump Seven
@@ -609,9 +607,7 @@ fn test_deck_to_and_from_json() {
 
 #[test]
 fn test_deck_to_json_pretty() {
-    let cards = VecDeque::from(vec![
-        Card::new(Suit::Hearts, Rank::Ace),
-    ]);
+    let cards = VecDeque::from(vec![Card::new(Suit::Hearts, Rank::Ace)]);
     let deck = Deck::new(cards);
 
     let json_pretty = deck.to_json_pretty().unwrap();
@@ -647,9 +643,7 @@ fn test_deck_to_and_from_yaml() {
 
 #[test]
 fn test_deck_json_format() {
-    let cards = VecDeque::from(vec![
-        Card::new(Suit::Hearts, Rank::Ace),
-    ]);
+    let cards = VecDeque::from(vec![Card::new(Suit::Hearts, Rank::Ace)]);
     let deck = Deck::new(cards);
 
     let json = deck.to_json().unwrap();
@@ -662,9 +656,7 @@ fn test_deck_json_format() {
 
 #[test]
 fn test_deck_yaml_format() {
-    let cards = VecDeque::from(vec![
-        Card::new(Suit::Hearts, Rank::Ace),
-    ]);
+    let cards = VecDeque::from(vec![Card::new(Suit::Hearts, Rank::Ace)]);
     let deck = Deck::new(cards);
 
     let yaml = deck.to_yaml().unwrap();
@@ -794,21 +786,24 @@ fn test_deck_insert_at() {
     assert_eq!(found_position, Some(1));
 
     let new_card = Card::new(Suit::Clubs, Rank::Ten);
-   assert!(!deck.insert_at(new_card, 1000));
+    assert!(!deck.insert_at(new_card, 1000));
 
-   // Verify the card was not inserted
-   let found_position = deck.find(&Card::new(Suit::Clubs, Rank::Ten));
-   assert_eq!(found_position, None);
+    // Verify the card was not inserted
+    let found_position = deck.find(&Card::new(Suit::Clubs, Rank::Ten));
+    assert_eq!(found_position, None);
 
-   // Verify we can add to end of deck
-   let new_card = Card::new(Suit::Clubs, Rank::Ten);
-   assert!(deck.insert_at(new_card, deck.len()));
-   assert_eq!(deck.find(&Card::new(Suit::Clubs, Rank::Ten)), Some(deck.len() - 1));
+    // Verify we can add to end of deck
+    let new_card = Card::new(Suit::Clubs, Rank::Ten);
+    assert!(deck.insert_at(new_card, deck.len()));
+    assert_eq!(
+        deck.find(&Card::new(Suit::Clubs, Rank::Ten)),
+        Some(deck.len() - 1)
+    );
 
-   // Verify we can add to the beginning of a deck
-   let new_card = Card::new(Suit::Clubs, Rank::Nine);
-   assert!(deck.insert_at(new_card, 0));
-   assert_eq!(deck.find(&Card::new(Suit::Clubs, Rank::Nine)), Some(0));
+    // Verify we can add to the beginning of a deck
+    let new_card = Card::new(Suit::Clubs, Rank::Nine);
+    assert!(deck.insert_at(new_card, 0));
+    assert_eq!(deck.find(&Card::new(Suit::Clubs, Rank::Nine)), Some(0));
 }
 
 #[test]
@@ -907,7 +902,10 @@ fn test_deck_peek_at() {
 
     assert_eq!(deck.peek_at(0), Some(&Card::new(Suit::Hearts, Rank::Ace)));
     assert_eq!(deck.peek_at(1), Some(&Card::new(Suit::Spades, Rank::King)));
-    assert_eq!(deck.peek_at(2), Some(&Card::new(Suit::Diamonds, Rank::Queen)));
+    assert_eq!(
+        deck.peek_at(2),
+        Some(&Card::new(Suit::Diamonds, Rank::Queen))
+    );
     assert_eq!(deck.peek_at(3), None);
 }
 
