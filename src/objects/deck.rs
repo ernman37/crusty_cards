@@ -138,7 +138,7 @@ impl Deck {
         let middle = self.len() / 2;
         let (mut top, mut bottom) = self.split_at(middle);
         let mut shuffled = VecDeque::new();
-        while !bottom.is_empty() || !top.is_empty() {
+        while !top.is_empty() || !bottom.is_empty() {
             if !bottom.is_empty() {
                 shuffled.push_back(bottom.deal().unwrap());
             }
@@ -187,9 +187,6 @@ impl Deck {
     /// if n == 0 return Some(Vec::new())
     /// if n <= deck.len() return Some(Vec<Card>)
     pub fn deal_n(&mut self, n: usize) -> Option<Vec<Card>> {
-        if self.len() < n {
-            return None;
-        }
         let mut cards = Vec::new();
         for _ in 0..n {
             let card = self.deal()?;
@@ -205,9 +202,6 @@ impl Deck {
 
     /// Deals n amount of cards from the bottom of the deck
     pub fn deal_n_bottom(&mut self, n: usize) -> Option<Vec<Card>> {
-        if self.len() < n {
-            return None;
-        }
         let mut cards = Vec::new();
         for _ in 0..n {
             let card = self.deal_bottom()?;

@@ -522,3 +522,35 @@ fn test_card_from_csv_row() {
     let card = Card::from_csv_row(csv_row).unwrap();
     assert_eq!(card, Card::new(Suit::Spades, Rank::Joker));
 }
+
+#[test]
+fn from_csv_row_invalid() {
+    let csv_row = "invalid";
+    let card = Card::from_csv_row(csv_row);
+    assert!(card.is_err());
+    let csv_row = "invalid,spade";
+    let card = Card::from_csv_row(csv_row);
+    assert!(card.is_err());
+    let csv_row = "queen,invalid";
+    let card = Card::from_csv_row(csv_row);
+    assert!(card.is_err());
+}
+
+#[test]
+fn from_usize_out_of_range(){
+    let size = usize::MAX;
+    let card = Card::try_from(size);
+    assert!(card.is_err());
+}
+
+#[test]
+fn from_str_empty() {
+    let card = Card::from_str("");
+    assert!(card.is_err());
+}
+
+#[test]
+fn from_str_short() {
+    let card = Card::from_str("A");
+    assert!(card.is_err());
+}
