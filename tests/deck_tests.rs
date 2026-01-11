@@ -704,3 +704,53 @@ fn test_deck_inequality() {
 
     assert_ne!(deck1, deck2);
 }
+
+#[test]
+fn test_deck_contains() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+    ]);
+    let deck = Deck::new(cards);
+
+    assert!(deck.contains(&Card::new(Suit::Hearts, Rank::Ace)));
+    assert!(!deck.contains(&Card::new(Suit::Diamonds, Rank::Queen)));
+}
+
+#[test]
+fn test_deck_find() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+    ]);
+    let deck = Deck::new(cards);
+
+    let found_position = deck.find(&Card::new(Suit::Spades, Rank::King));
+    assert_eq!(found_position, Some(1));
+
+    let found_position_none = deck.find(&Card::new(Suit::Diamonds, Rank::Queen));
+    assert_eq!(found_position_none, None);
+}
+
+#[test]
+fn test_deck_insert_at() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+    ]);
+    let mut deck = Deck::new(cards);
+
+    let new_card = Card::new(Suit::Diamonds, Rank::Queen);
+    assert!(deck.insert_at(new_card, 1));
+
+    // Verify the card was inserted
+    let found_position = deck.find(&Card::new(Suit::Diamonds, Rank::Queen));
+    assert_eq!(found_position, Some(1));
+
+    let new_card = Card::new(Suit::Clubs, Rank::Ten);
+   assert!(!deck.insert_at(new_card, 1000));
+
+   // Verify the card was not inserted
+   let found_position = deck.find(&Card::new(Suit::Clubs, Rank::Ten));
+   assert_eq!(found_position, None);
+}

@@ -67,6 +67,26 @@ impl Deck {
         true
     }
 
+
+    /// Returns if the card is in the deck.
+    pub fn contains(&self, card: &Card) -> bool {
+        self.cards.contains(card)
+    }
+
+    /// Returns the index of the card in the deck, if it exists.
+    pub fn find(&self, card: &Card) -> Option<usize> {
+        self.cards.iter().position(|c| c == card)
+    }
+
+    /// Inserts a card at the specified index in the deck.
+    pub fn insert_at(&mut self, card: Card, index: usize) -> bool {
+        if index > self.cards.len() {
+            return false;
+        }
+        self.cards.insert(index, card);
+        true
+    }
+
     /// Returns the number of cards in the deck.
     pub fn len(&self) -> usize {
         self.cards.len()
