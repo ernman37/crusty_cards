@@ -1,6 +1,6 @@
 [package]
 name = "crusty_cards"
-version = "0.0.0"
+version = "0.0.1"
 edition = "2021"
 description = "Playing Card and Deck Library"
 authors = ["Ernest Duckworth IV"]
@@ -9,7 +9,6 @@ readme = "README.md"
 keywords = ['cards', 'playing-cards', 'casino', 'card-games', 'games']
 categories = []
 repository = 'https://github.com/ernman37/crusty_cards'
-
 
 [dependencies]
 rand = "0.9.2"
