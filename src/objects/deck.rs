@@ -85,7 +85,7 @@ impl Deck {
         if index >= self.cards.len() {
             return None;
         }
-        Some(self.cards.remove(index).unwrap())
+        self.cards.remove(index)
     }
 
     /// Reverses the order of cards in self
