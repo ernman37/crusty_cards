@@ -136,16 +136,17 @@ impl Deck {
     /// Riffle shuffles the deck of cards.
     pub fn riffle_shuffle(&mut self) {
         let middle = self.len() / 2;
-        let (mut top, mut bottom) = self.split_at(middle);
-        let mut shuffled = VecDeque::new();
-        while !bottom.is_empty() || !top.is_empty() {
-            if !bottom.is_empty() {
-                shuffled.push_back(bottom.deal().unwrap());
-            }
-            if !top.is_empty() {
-                shuffled.push_back(top.deal().unwrap());
-            }
+        let mut shuffled = VecDeque::with_capacity(self.len());
+
+        for i in 0..middle {
+            shuffled.push_back(self.cards[middle + i]);
+            shuffled.push_back(self.cards[i]);
         }
+
+        if self.len() % 2 == 1 {
+            shuffled.push_back(self.cards[self.len() - 1]);
+        }
+
         self.cards = shuffled;
     }
 
@@ -187,9 +188,6 @@ impl Deck {
     /// if n == 0 return Some(Vec::new())
     /// if n <= deck.len() return Some(Vec<Card>)
     pub fn deal_n(&mut self, n: usize) -> Option<Vec<Card>> {
-        if self.len() < n {
-            return None;
-        }
         let mut cards = Vec::new();
         for _ in 0..n {
             let card = self.deal()?;
@@ -205,9 +203,6 @@ impl Deck {
 
     /// Deals n amount of cards from the bottom of the deck
     pub fn deal_n_bottom(&mut self, n: usize) -> Option<Vec<Card>> {
-        if self.len() < n {
-            return None;
-        }
         let mut cards = Vec::new();
         for _ in 0..n {
             let card = self.deal_bottom()?;

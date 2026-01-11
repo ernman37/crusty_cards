@@ -1028,6 +1028,20 @@ fn test_deck_riffle_shuffle() {
 }
 
 #[test]
+fn test_deck_riffle_shuffle_odd() {
+    let cards = vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+        Card::new(Suit::Diamonds, Rank::Queen),
+    ];
+    let mut deck = Deck::new(VecDeque::from(cards));
+    let original_deck = deck.clone();
+    deck.riffle_shuffle();
+    assert_eq!(deck.len(), original_deck.len());
+    assert_ne!(deck, original_deck);
+}
+
+#[test]
 fn test_deck_riffle_shuffle_times() {
     let mut cards = VecDeque::new();
     for suit in Suit::ALL {
@@ -1161,4 +1175,82 @@ fn test_from_iterator() {
     ];
     let deck: Deck = cards.into_iter().collect();
     assert_eq!(deck.len(), 3);
+}
+
+#[test]
+fn test_deck_add_cards_bottom() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+    ]);
+    let mut deck = Deck::new(cards);
+    let new_cards = vec![
+        Card::new(Suit::Diamonds, Rank::Queen),
+        Card::new(Suit::Clubs, Rank::Jack),
+    ];
+    deck.add_cards_bottom(new_cards);
+    assert_eq!(deck.len(), 4);
+}
+
+#[test]
+fn test_deck_from_str_delimiter_empty_arg() {
+    let deck = Deck::from_str_delimiter("A♠,K♥,Q♦,,J♣,    ", ',');
+    assert!(deck.is_ok());
+}
+
+#[test]
+fn test_deck_from_csv_empty_line() {
+    let csv_data = "Rank,Suit\nA,♠\nK,♥\n\nQ,♦\nJ,♣\n";
+    let deck = Deck::from_csv(csv_data);
+    assert!(deck.is_ok());
+}
+
+#[test]
+fn test_deck_from_csv_bad_line() {
+    let csv_data = "Rank,Suit\nA,♠\nK,♥\nX,♦\nJ,♣\n";
+    let deck = Deck::from_csv(csv_data);
+    assert!(deck.is_err());
+}
+
+#[test]
+fn test_deck_from_usize_vec_bad_value() {
+    let vec = vec![1, 2, 3, 4, 5, 1000];
+    let deck = Deck::try_from(vec);
+    assert!(deck.is_err());
+}
+
+#[test]
+fn test_deck_ref_into_iterator() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+        Card::new(Suit::Diamonds, Rank::Queen),
+    ]);
+    let deck = Deck::new(cards);
+    let mut cards = Vec::new();
+
+    // This uses IntoIterator for &Deck
+    for card in &deck {
+        cards.push(*card);
+    }
+
+    assert_eq!(cards.len(), 3);
+    assert_eq!(cards[0], Card::new(Suit::Hearts, Rank::Ace));
+    assert_eq!(cards[1], Card::new(Suit::Spades, Rank::King));
+    assert_eq!(cards[2], Card::new(Suit::Diamonds, Rank::Queen));
+
+    // Deck should still be usable (not consumed)
+    assert_eq!(deck.len(), 3);
+}
+
+#[test]
+fn test_deck_ref_into_iterator_empty() {
+    let deck = Deck::default();
+    let mut count = 0;
+
+    for _card in &deck {
+        count += 1;
+    }
+
+    assert_eq!(count, 0);
 }

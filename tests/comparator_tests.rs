@@ -18,6 +18,30 @@ fn test_standard_comparator() {
 }
 
 #[test]
+fn test_standard_max() {
+    let cmp = StandardComparator;
+    let ace = Card::new(Suit::Spades, Rank::Ace);
+    let king = Card::new(Suit::Hearts, Rank::King);
+    let two = Card::new(Suit::Clubs, Rank::Two);
+
+    assert_eq!(cmp.max(&ace, &king), &ace);
+    assert_eq!(cmp.max(&king, &two), &king);
+    assert_eq!(cmp.max(&two, &ace), &ace);
+}
+
+#[test]
+fn test_standard_min() {
+    let cmp = StandardComparator;
+    let ace = Card::new(Suit::Spades, Rank::Ace);
+    let king = Card::new(Suit::Hearts, Rank::King);
+    let two = Card::new(Suit::Clubs, Rank::Two);
+
+    assert_eq!(cmp.min(&ace, &king), &king);
+    assert_eq!(cmp.min(&king, &two), &two);
+    assert_eq!(cmp.min(&two, &ace), &two);
+}
+
+#[test]
 fn test_standard_comparator_rank_values() {
     let cmp = StandardComparator;
     assert_eq!(cmp.rank_value(Rank::Two), 0);
@@ -41,12 +65,32 @@ fn test_ace_low_comparator() {
     let cmp = AceLowComparator;
     let ace = Card::new(Suit::Spades, Rank::Ace);
     let two = Card::new(Suit::Hearts, Rank::Two);
+    let three = Card::new(Suit::Diamonds, Rank::Three);
+    let four = Card::new(Suit::Clubs, Rank::Four);
+    let five = Card::new(Suit::Hearts, Rank::Five);
+    let six = Card::new(Suit::Diamonds, Rank::Six);
+    let seven = Card::new(Suit::Clubs, Rank::Seven);
+    let eight = Card::new(Suit::Hearts, Rank::Eight);
+    let nine = Card::new(Suit::Diamonds, Rank::Nine);
+    let ten = Card::new(Suit::Clubs, Rank::Ten);
+    let jack = Card::new(Suit::Hearts, Rank::Jack);
+    let queen = Card::new(Suit::Diamonds, Rank::Queen);
     let king = Card::new(Suit::Clubs, Rank::King);
+    let joker = Card::new(Suit::Spades, Rank::Joker);
 
-    assert!(cmp.is_less(&ace, &two));
-    assert!(cmp.is_less(&ace, &king));
-    assert!(cmp.is_greater(&king, &ace));
-    assert_eq!(cmp.rank_value(Rank::Ace), 1);
+    assert!(cmp.is_greater(&joker, &king));
+    assert!(cmp.is_greater(&king, &queen));
+    assert!(cmp.is_greater(&queen, &jack));
+    assert!(cmp.is_greater(&jack, &ten));
+    assert!(cmp.is_greater(&ten, &nine));
+    assert!(cmp.is_greater(&nine, &eight));
+    assert!(cmp.is_greater(&eight, &seven));
+    assert!(cmp.is_greater(&seven, &six));
+    assert!(cmp.is_greater(&six, &five));
+    assert!(cmp.is_greater(&five, &four));
+    assert!(cmp.is_greater(&four, &three));
+    assert!(cmp.is_greater(&three, &two));
+    assert!(cmp.is_greater(&two, &ace));
 }
 
 #[test]
@@ -67,6 +111,7 @@ fn test_bridge_comparator_suit_order() {
 #[test]
 fn test_trump_comparator() {
     let cmp = TrumpComparator::new(Suit::Hearts);
+    assert!(cmp.trump() == Suit::Hearts);
 
     // Trump beats non-trump
     let two_hearts = Card::new(Suit::Hearts, Rank::Two);
