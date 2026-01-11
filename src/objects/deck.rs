@@ -88,7 +88,7 @@ impl Deck {
         Some(self.cards.remove(index).unwrap())
     }
 
-    // Reverses the order of cards in self
+    /// Reverses the order of cards in self
     pub fn reverse(&mut self) {
         self.cards = self.cards.iter().cloned().rev().collect();
     }
