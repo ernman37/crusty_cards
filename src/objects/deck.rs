@@ -136,16 +136,17 @@ impl Deck {
     /// Riffle shuffles the deck of cards.
     pub fn riffle_shuffle(&mut self) {
         let middle = self.len() / 2;
-        let (mut top, mut bottom) = self.split_at(middle);
-        let mut shuffled = VecDeque::new();
-        while !top.is_empty() || !bottom.is_empty() {
-            if !bottom.is_empty() {
-                shuffled.push_back(bottom.deal().unwrap());
-            }
-            if !top.is_empty() {
-                shuffled.push_back(top.deal().unwrap());
-            }
+        let mut shuffled = VecDeque::with_capacity(self.len());
+
+        for i in 0..middle {
+            shuffled.push_back(self.cards[middle + i]); // bottom card
+            shuffled.push_back(self.cards[i]); // top card
         }
+
+        if self.len() % 2 == 1 {
+            shuffled.push_back(self.cards[self.len() - 1]);
+        }
+
         self.cards = shuffled;
     }
 
