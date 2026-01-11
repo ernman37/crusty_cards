@@ -9,22 +9,20 @@
 
 ### Package Metadata
 - [ ] **Version is 0.0.0** - Update to proper semver (e.g., `0.1.0`) before publishing
-- [ ] **Add repository URL** to `Cargo.toml`
-- [ ] **Add authors field** to `Cargo.toml`
-- [ ] **Crate name mismatch** - Repo is `rusty_cards` but crate is `crusty_cards` - intentional?
-
+- [x] **Add repository URL** to `Cargo.toml`
+- [x] **Add authors field** to `Cargo.toml`
 ---
 
 ## 🟡 Medium Priority
 
 ### Missing Features
-- [ ] **Hand struct** - A `Hand` abstraction for player hands (smaller collection, different semantics than Deck)
-- [ ] **Card parsing from string** - `impl FromStr for Card` (e.g., "A♠" or "AS" → Card)
-- [ ] **Rank parsing from string** - `impl FromStr for Rank`
-- [ ] **Suit parsing from string** - `impl FromStr for Suit`
-- [ ] **Default for Deck** - Should `Deck::default()` return empty or standard 52?
-- [ ] **PartialEq for Deck** - Currently can't compare decks for equality
-- [ ] **Eq/Hash for Deck** - Enable using Deck in HashSets/HashMaps
+- [x] **Hand struct** - A `Hand` abstraction for player hands (smaller collection, different semantics than Deck)
+- [x] **Card parsing from string** - `impl FromStr for Card` (e.g., "A♠" or "AS" → Card)
+- [x] **Rank parsing from string** - `impl FromStr for Rank`
+- [x] **Suit parsing from string** - `impl FromStr for Suit`
+- [x] **Default for Deck** - Should `Deck::default()` return empty or standard 52?
+- [x] **PartialEq for Deck** - Currently can't compare decks for equality
+- [x] **Eq/Hash for Deck** - Enable using Deck in HashSets/HashMaps
 
 ### Additional Factories
 - [ ] **Pinochle deck** (48 cards - double deck without 2-8)
@@ -48,15 +46,16 @@
 ### Features
 - [ ] **Colored terminal output** - Use ANSI colors for red/black suits
 - [ ] **Multiple ASCII art styles** - Compact, detailed, etc.
-- [ ] **Deck::contains(&Card)** - Check if deck contains a specific card
-- [ ] **Deck::find(&Card)** - Find position of card in deck
-- [ ] **Deck::remove_at(index)** - Remove card at specific position
-- [ ] **Deck::insert_at(index, Card)** - Insert card at specific position
-- [ ] **Deck::reverse()** - Reverse deck order
-- [ ] **Deck::split_at(index)** - Split into two decks
-- [ ] **Deal multiple cards** - `deal_n(n: usize) -> Vec<Card>`
-- [ ] **Riffle shuffle** - More realistic shuffle simulation
-- [ ] **Overhand shuffle** - Another shuffle variant
+- [x] **Deck::contains(&Card)** - Check if deck contains a specific card
+- [x] **Deck::find(&Card)** - Find position of card in deck
+- [x] **Deck::remove_at(index)** - Remove card at specific position
+- [x] **Deck::insert_at(index, Card)** - Insert card at specific position
+- [x] **Deck::count(Card)** - Count instances of a card in deck
+- [x] **Deck::reverse()** - Reverse deck order
+- [x] **Deck::split_at(index)** - Split into two decks
+- [x] **Deal multiple cards** - `deal_n(n: usize) -> Vec<Card>`
+- [x] **Riffle shuffle** - More realistic shuffle simulation
+- [x] **Overhand shuffle** - Another shuffle variant
 
 ### Testing
 - [ ] **Property-based tests** - Use `proptest` or `quickcheck`
@@ -70,10 +69,10 @@
 - [ ] **Publish to crates.io** - Once stable
 
 ### Traits
-- [ ] **Index trait** - `deck[0]` to get card at position
-- [ ] **IndexMut trait** - `deck[0] = card` to set card at position
-- [ ] **Extend trait** - `deck.extend(other_cards)`
-- [ ] **FromIterator trait** - `cards.into_iter().collect::<Deck>()`
+- [x] **Index trait** - `deck[0]` to get card at position
+- [x] **IndexMut trait** - `deck[0] = card` to set card at position
+- [x] **Extend trait** - `deck.extend(other_cards)` (add_cards, add_cards_bottom)
+- [x] **FromIterator trait** - `cards.into_iter().collect::<Deck>()`
 
 ---
 
@@ -89,23 +88,22 @@
 
 Based on current test coverage (96 tests), these areas need more testing:
 
-- [ ] **Empty deck edge cases** - `cut(0)`, `shuffle()`, `deal()` on empty
-- [ ] **Single card deck operations**
-- [ ] **Deck * 0** - Should produce empty deck
-- [ ] **Deck * 1** - Should be identical to original
-- [ ] **Subtracting non-existent card** - What happens?
-- [ ] **Clone verification** - Cloned deck is independent
-- [ ] **Debug output format** - Verify Debug impl produces useful output
-- [ ] **Serialization roundtrip with all card types** - Including jokers
+- [x] **Empty deck edge cases** - `cut(0)`, `shuffle()`, `deal()` on empty
+- [x] **Single card deck operations**
+- [x] **Deck * 0** - Should produce empty deck
+- [x] **Deck * 1** - Should be identical to original
+- [x] **Subtracting non-existent card** - What happens?
+- [x] **Clone verification** - Cloned deck is independent
+- [x] **Debug output format** - Verify Debug impl produces useful output
+- [x] **Serialization roundtrip with all card types** - Including jokers
 
 ---
 
 ## 🔧 Refactoring Suggestions
 
-1. **Consider using `SmallVec` for Hand** - Hands are typically small (5-13 cards)
-2. **Make Card fields public?** - Currently requires getters; consider `pub suit: Suit`
-3. **Builder pattern for comparators** - `TrumpComparator::builder().trump(Suit::Hearts).ace_low(true).build()`
-4. **Generic over card type** - `Deck<C: CardLike>` for custom card types
+1. **Make Card fields public?** - Currently requires getters; consider `pub suit: Suit`
+2. **Builder pattern for comparators** - `TrumpComparator::builder().trump(Suit::Hearts).ace_low(true).build()`
+3. **Generic over card type** - `Deck<C: CardLike>` for custom card types
 
 ---
 

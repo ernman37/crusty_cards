@@ -37,6 +37,10 @@ fn test_deck_cut() {
     let result = deck.cut(10); // Cutting beyond length should do nothing
     assert!(!result);
     assert_eq!(deck.peek(), Some(&Card::new(Suit::Diamonds, Rank::Queen)));
+
+    let mut empty_deck = Deck::default();
+    assert!(empty_deck.is_empty());
+    assert_eq!(empty_deck.cut(0), false);
 }
 
 #[test]
@@ -81,8 +85,16 @@ fn test_deck_shuffle() {
     }
     assert!(
         false,
-        "Deck shuffle did not change order after multiple attempts"
+        "Congratulations you just shuffled the deck randomly 100 times without changing its order, You should go buy a lottery ticket"
     );
+}
+
+#[test]
+fn test_deck_shuffle_empty() {
+    let mut empty_deck = Deck::default();
+    assert!(empty_deck.is_empty());
+    empty_deck.shuffle();
+    assert!(empty_deck.is_empty());
 }
 
 #[test]
@@ -242,6 +254,18 @@ fn test_deck_sub_assign_card() {
 }
 
 #[test]
+fn test_deck_sub_missing_card() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+    ]);
+    let mut deck = Deck::new(cards);
+    deck -= Card::new(Suit::Diamonds, Rank::Queen);
+    assert_eq!(deck.len(), 2);
+    assert_eq!(deck.peek(), Some(&Card::new(Suit::Hearts, Rank::Ace)));
+}
+
+#[test]
 fn test_add_deck_deck() {
     let cards1 = VecDeque::from(vec![
         Card::new(Suit::Hearts, Rank::Ace),
@@ -321,6 +345,28 @@ fn test_deck_mul() {
     let deck = Deck::new(cards);
     let multiplied_deck = deck * 3;
     assert_eq!(multiplied_deck.len(), 6);
+}
+
+#[test]
+fn test_deck_mul_zero() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+    ]);
+    let deck = Deck::new(cards);
+    let multiplied_deck = deck * 0;
+    assert_eq!(multiplied_deck.len(), 0);
+}
+
+#[test]
+fn test_deck_mul_one() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+    ]);
+    let deck = Deck::new(cards);
+    let multiplied_deck = deck * 1;
+    assert_eq!(multiplied_deck.len(), 2);
 }
 
 #[test]
@@ -753,4 +799,368 @@ fn test_deck_insert_at() {
    // Verify the card was not inserted
    let found_position = deck.find(&Card::new(Suit::Clubs, Rank::Ten));
    assert_eq!(found_position, None);
+
+   // Verify we can add to end of deck
+   let new_card = Card::new(Suit::Clubs, Rank::Ten);
+   assert!(deck.insert_at(new_card, deck.len()));
+   assert_eq!(deck.find(&Card::new(Suit::Clubs, Rank::Ten)), Some(deck.len() - 1));
+
+   // Verify we can add to the beginning of a deck
+   let new_card = Card::new(Suit::Clubs, Rank::Nine);
+   assert!(deck.insert_at(new_card, 0));
+   assert_eq!(deck.find(&Card::new(Suit::Clubs, Rank::Nine)), Some(0));
+}
+
+#[test]
+fn test_deck_remove_at() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+        Card::new(Suit::Diamonds, Rank::Queen),
+    ]);
+    let mut deck = Deck::new(cards);
+
+    assert_eq!(deck.remove_at(1), Some(Card::new(Suit::Spades, Rank::King)));
+    assert_eq!(deck.len(), 2);
+    assert_eq!(deck.remove_at(100), None);
+}
+
+#[test]
+fn test_deck_count() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+    ]);
+    let deck = Deck::new(cards);
+
+    let count_ace_hearts = deck.count(&Card::new(Suit::Hearts, Rank::Ace));
+    assert_eq!(count_ace_hearts, 2);
+
+    let count_king_spades = deck.count(&Card::new(Suit::Spades, Rank::King));
+    assert_eq!(count_king_spades, 1);
+
+    let count_queen_diamonds = deck.count(&Card::new(Suit::Diamonds, Rank::Queen));
+    assert_eq!(count_queen_diamonds, 0);
+}
+
+#[test]
+fn test_deck_reverse() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+        Card::new(Suit::Clubs, Rank::Ten),
+        Card::new(Suit::Diamonds, Rank::Queen),
+    ]);
+    let mut deck = Deck::new(cards);
+
+    deck.reverse();
+
+    assert_eq!(deck.deal().unwrap(), Card::new(Suit::Diamonds, Rank::Queen));
+    assert_eq!(deck.deal().unwrap(), Card::new(Suit::Clubs, Rank::Ten));
+    assert_eq!(deck.deal().unwrap(), Card::new(Suit::Spades, Rank::King));
+    assert_eq!(deck.deal().unwrap(), Card::new(Suit::Hearts, Rank::Ace));
+}
+
+#[test]
+fn test_deck_split_at() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+        Card::new(Suit::Diamonds, Rank::Queen),
+    ]);
+    let deck = Deck::new(cards);
+
+    let (left, right) = deck.split_at(2);
+    assert_eq!(left.len(), 2);
+    assert_eq!(right.len(), 1);
+    assert_eq!(left.peek(), Some(&Card::new(Suit::Hearts, Rank::Ace)));
+    assert_eq!(right.peek(), Some(&Card::new(Suit::Diamonds, Rank::Queen)));
+
+    // Split at 0
+    let (left, right) = deck.split_at(0);
+    assert_eq!(left.len(), 0);
+    assert_eq!(right.len(), 3);
+    assert_eq!(right.peek(), Some(&Card::new(Suit::Hearts, Rank::Ace)));
+
+    // Split at Len
+    let (left, right) = deck.split_at(deck.len());
+    assert_eq!(left.len(), 3);
+    assert_eq!(right.len(), 0);
+    assert_eq!(left.peek(), Some(&Card::new(Suit::Hearts, Rank::Ace)));
+
+    //Split at len + 1
+    let (left, right) = deck.split_at(deck.len() + 1);
+    assert_eq!(left.len(), 3);
+    assert_eq!(right.len(), 0);
+    assert_eq!(left.peek(), Some(&Card::new(Suit::Hearts, Rank::Ace)));
+}
+
+#[test]
+fn test_deck_peek_at() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+        Card::new(Suit::Diamonds, Rank::Queen),
+    ]);
+    let deck = Deck::new(cards);
+
+    assert_eq!(deck.peek_at(0), Some(&Card::new(Suit::Hearts, Rank::Ace)));
+    assert_eq!(deck.peek_at(1), Some(&Card::new(Suit::Spades, Rank::King)));
+    assert_eq!(deck.peek_at(2), Some(&Card::new(Suit::Diamonds, Rank::Queen)));
+    assert_eq!(deck.peek_at(3), None);
+}
+
+#[test]
+fn test_deck_deal_n() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+        Card::new(Suit::Diamonds, Rank::Queen),
+        Card::new(Suit::Clubs, Rank::Jack),
+    ]);
+    let mut deck = Deck::new(cards);
+
+    let dealt_cards = deck.deal_n(2).unwrap();
+    assert_eq!(dealt_cards.len(), 2);
+    assert_eq!(dealt_cards[0], Card::new(Suit::Hearts, Rank::Ace));
+    assert_eq!(dealt_cards[1], Card::new(Suit::Spades, Rank::King));
+    assert_eq!(deck.len(), 2);
+
+    let dealt_cards_empty = deck.deal_n(0).unwrap();
+    assert_eq!(dealt_cards_empty.len(), 0);
+
+    let dealt_cards_exceed = deck.deal_n(deck.len() + 1);
+    assert_eq!(dealt_cards_exceed, None);
+}
+
+#[test]
+fn test_deck_deal_n_bottom() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+        Card::new(Suit::Diamonds, Rank::Queen),
+        Card::new(Suit::Clubs, Rank::Jack),
+    ]);
+    let mut deck = Deck::new(cards);
+
+    let dealt_cards = deck.deal_n(2).unwrap();
+    assert_eq!(dealt_cards.len(), 2);
+    assert_eq!(dealt_cards[0], Card::new(Suit::Hearts, Rank::Ace));
+    assert_eq!(dealt_cards[1], Card::new(Suit::Spades, Rank::King));
+    assert_eq!(deck.len(), 2);
+
+    let dealt_cards_empty = deck.deal_n(0).unwrap();
+    assert_eq!(dealt_cards_empty.len(), 0);
+
+    let dealt_cards_exceed = deck.deal_n(deck.len() + 1);
+    assert_eq!(dealt_cards_exceed, None);
+}
+
+#[test]
+fn test_deck_clone() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+    ]);
+    let deck = Deck::new(cards);
+    let mut cloned_deck = deck.clone();
+    assert_eq!(deck.len(), cloned_deck.len());
+    assert_eq!(deck.peek(), cloned_deck.peek());
+    assert_eq!(deck, cloned_deck);
+    cloned_deck.deal();
+    assert_ne!(deck, cloned_deck);
+}
+
+#[test]
+fn test_deck_json_roundtrip() {
+    let mut cards = VecDeque::new();
+    for suit in Suit::ALL {
+        for rank in Rank::ALL {
+            cards.push_back(Card::new(suit, rank));
+        }
+    }
+    let deck = Deck::new(cards);
+    let json = serde_json::to_string(&deck).unwrap();
+    let deserialized_deck: Deck = serde_json::from_str(&json).unwrap();
+    assert_eq!(deck, deserialized_deck);
+}
+
+#[test]
+fn test_deck_yaml_roundtrip() {
+    let mut cards = VecDeque::new();
+    for suit in Suit::ALL {
+        for rank in Rank::ALL {
+            cards.push_back(Card::new(suit, rank));
+        }
+    }
+    let deck = Deck::new(cards);
+    let yaml = serde_yaml::to_string(&deck).unwrap();
+    let deserialized_deck: Deck = serde_yaml::from_str(&yaml).unwrap();
+    assert_eq!(deck, deserialized_deck);
+}
+
+#[test]
+fn test_deck_csv_roundtrip() {
+    let mut cards = VecDeque::new();
+    for suit in Suit::ALL {
+        for rank in Rank::ALL {
+            cards.push_back(Card::new(suit, rank));
+        }
+    }
+    let deck = Deck::new(cards);
+    let csv = deck.as_csv();
+    let deserialized_deck: Deck = Deck::from_csv(&csv).unwrap();
+    assert_eq!(deck, deserialized_deck);
+}
+
+#[test]
+fn test_deck_riffle_shuffle() {
+    let mut cards = VecDeque::new();
+    for suit in Suit::ALL {
+        for rank in Rank::ALL {
+            cards.push_back(Card::new(suit, rank));
+        }
+    }
+    let mut deck = Deck::new(cards);
+    let original_deck = deck.clone();
+    deck.riffle_shuffle();
+    assert_eq!(deck.len(), original_deck.len());
+    assert_ne!(deck, original_deck);
+}
+
+#[test]
+fn test_deck_riffle_shuffle_times() {
+    let mut cards = VecDeque::new();
+    for suit in Suit::ALL {
+        for rank in Rank::ALL {
+            cards.push_back(Card::new(suit, rank));
+        }
+    }
+    let mut deck = Deck::new(cards);
+    let original_deck = deck.clone();
+    deck.riffle_shuffle_times(5);
+    assert_eq!(deck.len(), original_deck.len());
+    assert_ne!(deck, original_deck);
+}
+
+#[test]
+fn test_deck_riffle_shuffle_two() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+    ]);
+    let mut deck = Deck::new(cards);
+    let original_deck = deck.clone();
+    deck.riffle_shuffle();
+    assert_eq!(deck.len(), original_deck.len());
+    assert_ne!(deck, original_deck); // There's a chance this could fail if shuffle results in same order
+}
+
+#[test]
+fn test_deck_overhand_shuffle() {
+    let mut cards = VecDeque::new();
+    for suit in Suit::ALL {
+        for rank in Rank::ALL {
+            cards.push_back(Card::new(suit, rank));
+        }
+    }
+    let mut deck = Deck::new(cards);
+    let original_deck = deck.clone();
+    deck.overhand_shuffle();
+    assert_eq!(deck.len(), original_deck.len());
+    assert_ne!(deck, original_deck);
+}
+
+#[test]
+fn test_deck_overhand_shuffle_two() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+    ]);
+    let mut deck = Deck::new(cards);
+    let original_deck = deck.clone();
+    deck.overhand_shuffle();
+    assert_eq!(deck.len(), original_deck.len());
+    assert_ne!(deck, original_deck); // There's a chance this could fail if shuffle results in same order
+}
+
+#[test]
+fn test_deck_overhand_shuffle_times() {
+    let mut cards = VecDeque::new();
+    for suit in Suit::ALL {
+        for rank in Rank::ALL {
+            cards.push_back(Card::new(suit, rank));
+        }
+    }
+    let mut deck = Deck::new(cards);
+    let original_deck = deck.clone();
+    for _ in 1..100 {
+        deck.overhand_shuffle_times(10);
+        if deck != original_deck {
+            return;
+        }
+    }
+    assert!(false, "Congratulations you just shuffled the deck randomly 100 times without changing its order, You should go buy a lottery ticket")
+}
+
+#[test]
+fn test_deck_index() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+        Card::new(Suit::Diamonds, Rank::Queen),
+    ]);
+    let deck = Deck::new(cards);
+
+    assert_eq!(deck[0], Card::new(Suit::Hearts, Rank::Ace));
+    assert_eq!(deck[1], Card::new(Suit::Spades, Rank::King));
+    assert_eq!(deck[2], Card::new(Suit::Diamonds, Rank::Queen));
+}
+
+#[test]
+#[should_panic]
+fn test_deck_index_panic() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+        Card::new(Suit::Diamonds, Rank::Queen),
+    ]);
+    let deck = Deck::new(cards);
+    let _ = deck[3];
+}
+
+#[test]
+fn test_deck_index_mut() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+        Card::new(Suit::Diamonds, Rank::Queen),
+    ]);
+    let mut deck = Deck::new(cards);
+    deck[0] = Card::new(Suit::Clubs, Rank::Jack);
+    assert_eq!(deck[0], Card::new(Suit::Clubs, Rank::Jack));
+}
+
+#[test]
+#[should_panic]
+fn test_deck_index_mut_panic() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+        Card::new(Suit::Diamonds, Rank::Queen),
+    ]);
+    let mut deck = Deck::new(cards);
+    deck[3] = Card::new(Suit::Clubs, Rank::Jack);
+}
+
+#[test]
+fn test_from_iterator() {
+    let cards = vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+        Card::new(Suit::Diamonds, Rank::Queen),
+    ];
+    let deck: Deck = cards.into_iter().collect();
+    assert_eq!(deck.len(), 3);
 }
