@@ -20,7 +20,7 @@ pub struct Deck {
 
 impl fmt::Display for Deck {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.as_string_delimiter(' '))
+        write!(f, "{}", self.as_str_delimiter(' '))
     }
 }
 
@@ -256,7 +256,7 @@ impl Deck {
     }
 
     /// Returns a string representation of the deck with the specified delimiter.
-    pub fn as_string_delimiter(&self, delimiter: char) -> String {
+    pub fn as_str_delimiter(&self, delimiter: char) -> String {
         self.cards
             .iter()
             .map(|card| format!("{}", card))
