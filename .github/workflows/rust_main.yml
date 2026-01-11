@@ -1,19 +1,32 @@
 name: Rust
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+on: [push, pull_request]
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  check-clippy-fmt:
+     runs-on: ubuntu-latest
+     env:
+       CARGO_TERM_COLOR: always
+       RUSTFLAGS: -Dwarnings
+     steps:
+       - uses: actions/checkout@v4
+       - name: Set up Rust
+         uses: actions-rs/toolchain@v1
+         with:
+           toolchain: stable
+           profile: minimal
+       - name: Run Cargo Check
+         run: cargo check --verbose
+       - name: Run Cargo Clippy
+         run: cargo clippy --verbose
+       - name: Run Cargo fmt
+         run: cargo fmt --check
+
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
     - name: Build
