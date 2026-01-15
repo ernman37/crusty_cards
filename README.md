@@ -2,8 +2,20 @@
 
 [![Crates.io](https://img.shields.io/crates/v/crusty_cards.svg)](https://crates.io/crates/crusty_cards)
 [![Documentation](https://docs.rs/crusty_cards/badge.svg)](https://docs.rs/crusty_cards)
+[![License](https://img.shields.io/crates/l/crusty_cards.svg)](https://github.com/ernman37/crusty_cards/blob/main/LICENSE)
+[![Downloads](https://img.shields.io/crates/d/crusty_cards.svg)](https://crates.io/crates/crusty_cards)
+
 [![CI](https://github.com/ernman37/crusty_cards/actions/workflows/rust_main.yml/badge.svg)](https://github.com/ernman37/crusty_cards/actions)
 [![codecov](https://codecov.io/gh/ernman37/crusty_cards/branch/main/graph/badge.svg)](https://codecov.io/gh/ernman37/crusty_cards)
+[![Dependency Status](https://deps.rs/repo/github/ernman37/crusty_cards/status.svg)](https://deps.rs/repo/github/ernman37/crusty_cards)
+[![Rust](https://img.shields.io/badge/rust-1.70%2B-blue.svg)](https://www.rust-lang.org)
+
+[![SBOM](https://img.shields.io/badge/SBOM-SPDX-blue)](https://github.com/ernman37/crusty_cards/releases/latest)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/ernman37/crusty_cards/badge)](https://securityscorecards.dev/viewer/?uri=github.com/ernman37/crusty_cards)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/ernman37/crusty_cards/blob/main/CONTRIBUTING.md)
+[![Contributors](https://img.shields.io/github/contributors/ernman37/crusty_cards)](https://github.com/ernman37/crusty_cards/graphs/contributors)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/ernman37/crusty_cards/graphs/commit-activity)
+[![GitHub code size](https://img.shields.io/github/languages/code-size/ernman37/crusty_cards)](https://github.com/ernman37/crusty_cards)
 
 A Rust library for working with playing cards and decks. Provides flexible primitives for building card games.
 

@@ -1,0 +1,36 @@
+name: SBOM
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+
+      - name: Install cargo-sbom
+        run: cargo install cargo-sbom
+
+      - name: Generate SBOM (SPDX)
+        run: cargo sbom > crusty_cards.spdx.json
+
+      - name: Upload SBOM as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom.spdx.json
+
+      - name: Upload SBOM to release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: crusty_cards.spdx.json
