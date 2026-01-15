@@ -538,6 +538,44 @@ impl Deck {
         Some(cards)
     }
 
+    /// Deals a card from the specified index
+    ///
+    /// Returns `None` if the index is out of bounds.
+    ///
+    /// # Examples
+    /// ```
+    /// use crusty_cards::{Deck, Card, Rank, Suit};
+    /// let mut deck = Deck::default();
+    /// deck.add_card(Card::new(Suit::Hearts, Rank::Ace));
+    /// let card = deck.deal_from(0);
+    /// assert_eq!(card, Some(Card::new(Suit::Hearts, Rank::Ace)));
+    /// ```
+    pub fn deal_from(&mut self, index: usize) -> Option<Card> {
+        self.cards.remove(index)
+    }
+
+    /// Deals n cards from the specified index
+    ///
+    /// Returns `None` if the index is out of bounds or if there are not enough
+    ///   cards remaining
+    ///
+    /// # Examples
+    /// ```rust
+    /// use crusty_cards::{Deck, Card, Rank, Suit};
+    /// let mut deck = Deck::default();
+    /// deck.add_card(Card::new(Suit::Hearts, Rank::Ace));
+    /// let cards = deck.deal_n_from(0, 1);
+    /// assert_eq!(cards, Some(vec![Card::new(Suit::Hearts, Rank::Ace)]));
+    /// ```
+    pub fn deal_n_from(&mut self, index: usize, n: usize) -> Option<Vec<Card>> {
+        let mut cards = Vec::new();
+        for _ in 0..n {
+            let card = self.deal_from(index)?;
+            cards.push(card);
+        }
+        Some(cards)
+    }
+
     /// Adds a card to the top of the deck.
     ///
     /// # Examples

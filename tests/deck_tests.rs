@@ -3,6 +3,7 @@ use crusty_cards::{
 };
 use std::collections::VecDeque;
 use std::str::FromStr;
+use std::vec;
 
 #[test]
 fn test_deck_creation() {
@@ -1261,4 +1262,46 @@ fn test_deck_ref_into_iterator_empty() {
 fn test_deck_from_factory() {
     let deck = Deck::from_factory(Standard52);
     assert_eq!(deck.len(), 52);
+}
+
+#[test]
+fn test_deck_deal_from() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+        Card::new(Suit::Diamonds, Rank::Queen),
+    ]);
+    let mut deck = Deck::new(cards);
+
+    let dealt_card = deck.deal_from(1).unwrap();
+    assert_eq!(dealt_card, Card::new(Suit::Spades, Rank::King));
+    assert_eq!(deck.len(), 2);
+
+    let dealt_card_invalid = deck.deal_from(5);
+    assert!(dealt_card_invalid.is_none());
+}
+
+#[test]
+fn test_deck_deal_from_n() {
+    let cards = VecDeque::from(vec![
+        Card::new(Suit::Hearts, Rank::Ace),
+        Card::new(Suit::Spades, Rank::King),
+        Card::new(Suit::Diamonds, Rank::Queen),
+        Card::new(Suit::Clubs, Rank::Jack),
+    ]);
+
+    let mut deck = Deck::new(cards);
+
+    let dealt_cards = deck.deal_n_from(1, 2).unwrap();
+    assert_eq!(
+        dealt_cards,
+        vec![
+            Card::new(Suit::Spades, Rank::King),
+            Card::new(Suit::Diamonds, Rank::Queen),
+        ]
+    );
+    assert_eq!(deck.len(), 2);
+
+    let dealt_cards_invalid = deck.deal_n_from(5, 2);
+    assert!(dealt_cards_invalid.is_none());
 }
