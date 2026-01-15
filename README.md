@@ -13,7 +13,7 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-crusty_cards = "0.0.0"
+crusty_cards = "x.x.x"
 ```
 
 ## Quick Start
