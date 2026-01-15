@@ -27,7 +27,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: sbom
-          path: sbom.spdx.json
+          path: crusty_cards.spdx.json
 
       - name: Upload SBOM to release
         if: github.event_name == 'release'
