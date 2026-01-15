@@ -1,13 +1,13 @@
 [package]
 name = "crusty_cards"
-version = "0.0.2"
+version = "0.0.3"
 edition = "2021"
 description = "Playing Card and Deck Library"
 authors = ["Ernest Duckworth IV"]
 license = "Beerware"
 readme = "README.md"
-keywords = ['cards', 'playing-cards', 'casino', 'card-games', 'games']
-categories = []
+keywords = ["cards", "playing-cards", "casino", "card-games", "games"]
+categories = ["games", "data-structure", "simulation", "algorithms"]
 repository = 'https://github.com/ernman37/crusty_cards'
 
 [dependencies]
