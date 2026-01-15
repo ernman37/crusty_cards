@@ -1293,10 +1293,13 @@ fn test_deck_deal_from_n() {
     let mut deck = Deck::new(cards);
 
     let dealt_cards = deck.deal_n_from(1, 2).unwrap();
-    assert_eq!(dealt_cards, vec![
-        Card::new(Suit::Spades, Rank::King),
-        Card::new(Suit::Diamonds, Rank::Queen),
-    ]);
+    assert_eq!(
+        dealt_cards,
+        vec![
+            Card::new(Suit::Spades, Rank::King),
+            Card::new(Suit::Diamonds, Rank::Queen),
+        ]
+    );
     assert_eq!(deck.len(), 2);
 
     let dealt_cards_invalid = deck.deal_n_from(5, 2);
