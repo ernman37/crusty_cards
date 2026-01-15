@@ -6,8 +6,8 @@ description = "Playing Card and Deck Library"
 authors = ["Ernest Duckworth IV"]
 license = "Beerware"
 readme = "README.md"
-keywords = ['cards', 'playing-cards', 'casino', 'card-games', 'games']
-categories = []
+keywords = ["cards", "playing-cards", "casino", "card-games", "games"]
+categories = ["games", "data-structure", "simulation", "algorithms"]
 repository = 'https://github.com/ernman37/crusty_cards'
 
 [dependencies]
